@@ -1,0 +1,20 @@
+package ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.di
+
+import ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.data.repository.AppLifecycleRepositoryImpl
+import ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.domain.repository.AppLifecycleRepository
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+interface AppLifecycleRepositoryModule {
+
+    @Singleton
+    @Binds
+    fun bindAppLifecycleRepository(
+        provider: AppLifecycleRepositoryImpl
+    ): AppLifecycleRepository
+}
