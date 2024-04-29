@@ -1,12 +1,15 @@
 package ch.admin.foitt.pilotwallet.feature.qrscan.presentation
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.viewModelScope
 import ch.admin.foitt.pilotwallet.R
 import ch.admin.foitt.pilotwallet.feature.qrscan.infra.QrScanner
 import ch.admin.foitt.pilotwallet.feature.qrscan.presentation.permission.hasCameraPermission
+import ch.admin.foitt.pilotwallet.platform.invitation.domain.model.InvitationError
+import ch.admin.foitt.pilotwallet.platform.invitation.domain.model.ProcessInvitationError
+import ch.admin.foitt.pilotwallet.platform.invitation.domain.usecase.HandleInvitationProcessingError
+import ch.admin.foitt.pilotwallet.platform.invitation.domain.usecase.HandleInvitationProcessingSuccess
 import ch.admin.foitt.pilotwallet.platform.invitation.domain.usecase.ProcessInvitation
 import ch.admin.foitt.pilotwallet.platform.navigation.NavigationManager
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.model.ErrorDialogState
@@ -28,10 +31,11 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-@SuppressLint("StaticFieldLeak")
 class QrScannerViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context,
     private val processInvitation: ProcessInvitation,
+    private val handleInvitationProcessingSuccess: HandleInvitationProcessingSuccess,
+    private val handleInvitationProcessingError: HandleInvitationProcessingError,
     private val setErrorDialogState: SetErrorDialogState,
     private val qrScanner: QrScanner,
     private val navManager: NavigationManager,
@@ -59,10 +63,20 @@ class QrScannerViewModel @Inject constructor(
         qrScanner.pauseScanner()
         viewModelScope.launchWithDelayedLoading(_isLoading) {
             // TODO: handle edge case when multiple invitations were scanned at the same time
-            processInvitation(invitationUri = barcodesContent.firstOrNull() ?: "")
-                .onSuccess { navigationAction -> navigationAction.navigate() }
-                .onFailure { showErrorWithDelayedHiding() }
+            val invitationUri = barcodesContent.firstOrNull() ?: ""
+            processInvitation(invitationUri = invitationUri)
+                .onSuccess { invitation ->
+                    handleInvitationProcessingSuccess(invitation).navigate()
+                }
+                .onFailure { invitationError ->
+                    handleProcessingFailure(invitationError, invitationUri)
+                }
         }
+    }
+
+    private suspend fun handleProcessingFailure(failureResult: ProcessInvitationError, invitationUri: String) = when (failureResult) {
+        InvitationError.InvalidInput -> showErrorWithDelayedHiding()
+        else -> handleInvitationProcessingError(failureResult, invitationUri).navigate()
     }
 
     private fun showErrorWithDelayedHiding() {

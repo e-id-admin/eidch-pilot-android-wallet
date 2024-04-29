@@ -5,12 +5,11 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import ch.admin.foitt.pilotwallet.feature.onboarding.domain.usecase.RegisterBiometricsUseCases
-import ch.admin.foitt.pilotwallet.feature.onboarding.navigation.OnboardingNavGraph
 import ch.admin.foitt.pilotwallet.platform.biometricPrompt.domain.model.BiometricManagerResult
 import ch.admin.foitt.pilotwallet.platform.biometricPrompt.domain.model.BiometricPromptType
 import ch.admin.foitt.pilotwallet.platform.biometricPrompt.presentation.AndroidBiometricPrompt
 import ch.admin.foitt.pilotwallet.platform.biometrics.domain.model.BiometricsError
-import ch.admin.foitt.pilotwallet.platform.navigation.NavigationManager
+import ch.admin.foitt.pilotwallet.platform.deeplink.domain.usecase.HandleDeeplink
 import ch.admin.foitt.pilotwallet.platform.passphrase.domain.model.InitializePassphraseError
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.model.ErrorDialogState
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.model.TopBarState
@@ -19,7 +18,6 @@ import ch.admin.foitt.pilotwallet.platform.scaffold.presentation.ScreenViewModel
 import ch.admin.foitt.pilotwallet.platform.utils.openSecuritySettings
 import ch.admin.foitt.pilotwallet.platform.utils.trackCompletion
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.EnableBiometricsScreenDestination
-import ch.admin.foitt.pilotwalletcomposedestinations.destinations.HomeScreenDestination
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,7 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterBiometricsViewModel @Inject constructor(
     private val registerBiometricsUseCases: RegisterBiometricsUseCases,
-    private val navManager: NavigationManager,
+    private val handleDeeplink: HandleDeeplink,
     @ApplicationContext private val appContext: Context,
     setTopBarState: SetTopBarState,
     savedStateHandle: SavedStateHandle,
@@ -81,7 +79,7 @@ class RegisterBiometricsViewModel @Inject constructor(
             fromSetup = true,
         ).onSuccess {
             saveOnboardingCompletedState()
-            navigateToHomeScreen()
+            handleDeeplink(fromOnboarding = true).navigate()
         }.onFailure { initializationError ->
             when (initializationError) {
                 BiometricsError.Locked -> {
@@ -102,7 +100,7 @@ class RegisterBiometricsViewModel @Inject constructor(
         registerBiometricsUseCases.initializePassphrase(pin, null)
             .onSuccess {
                 saveOnboardingCompletedState()
-                navigateToHomeScreen()
+                handleDeeplink(true).navigate()
             }
             .onFailure { error: InitializePassphraseError ->
                 registerBiometricsUseCases.setErrorDialogState(
@@ -129,16 +127,7 @@ class RegisterBiometricsViewModel @Inject constructor(
         BiometricManagerResult.Unsupported -> RegisterBiometricsScreenState.Disabled
     }
 
-    private fun saveOnboardingCompletedState() {
-        viewModelScope.launch {
-            registerBiometricsUseCases.saveOnboardingState(isCompleted = true)
-        }
-    }
-
-    private fun navigateToHomeScreen() {
-        navManager.navigateToAndPopUpTo(
-            direction = HomeScreenDestination,
-            route = OnboardingNavGraph.NAME,
-        )
+    private suspend fun saveOnboardingCompletedState() {
+        registerBiometricsUseCases.saveOnboardingState(isCompleted = true)
     }
 }

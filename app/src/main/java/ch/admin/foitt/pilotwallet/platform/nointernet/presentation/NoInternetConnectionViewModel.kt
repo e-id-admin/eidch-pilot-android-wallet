@@ -2,6 +2,8 @@ package ch.admin.foitt.pilotwallet.platform.nointernet.presentation
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import ch.admin.foitt.pilotwallet.platform.invitation.domain.usecase.HandleInvitationProcessingError
+import ch.admin.foitt.pilotwallet.platform.invitation.domain.usecase.HandleInvitationProcessingSuccess
 import ch.admin.foitt.pilotwallet.platform.invitation.domain.usecase.ProcessInvitation
 import ch.admin.foitt.pilotwallet.platform.navigation.NavigationManager
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.model.TopBarState
@@ -9,9 +11,8 @@ import ch.admin.foitt.pilotwallet.platform.scaffold.domain.usecase.SetTopBarStat
 import ch.admin.foitt.pilotwallet.platform.scaffold.extension.navigateUpOrToRoot
 import ch.admin.foitt.pilotwallet.platform.scaffold.presentation.ScreenViewModel
 import ch.admin.foitt.pilotwallet.platform.utils.trackCompletion
-import ch.admin.foitt.pilotwalletcomposedestinations.destinations.InvitationFailureScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.NoInternetConnectionScreenDestination
-import com.github.michaelbull.result.mapBoth
+import com.github.michaelbull.result.mapEither
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +24,8 @@ class NoInternetConnectionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val navManager: NavigationManager,
     private val processInvitation: ProcessInvitation,
+    private val handleInvitationProcessingSuccess: HandleInvitationProcessingSuccess,
+    private val handleInvitationProcessingError: HandleInvitationProcessingError,
     setTopBarState: SetTopBarState,
 ) : ScreenViewModel(setTopBarState) {
 
@@ -36,15 +39,16 @@ class NoInternetConnectionViewModel @Inject constructor(
 
     fun retry() {
         viewModelScope.launch {
-            processInvitation(invitationUri).mapBoth(
-                success = { it.navigate() },
-                failure = { navigateToFailureScreen() },
+            processInvitation(invitationUri).mapEither(
+                success = { invitation ->
+                    handleInvitationProcessingSuccess(invitation).navigate()
+                },
+                failure = { invitationError ->
+                    handleInvitationProcessingError(invitationError, invitationUri).navigate()
+                },
             )
         }.trackCompletion(_isLoading)
     }
-
-    private fun navigateToFailureScreen() =
-        navManager.navigateToAndClearCurrent(InvitationFailureScreenDestination)
 
     fun close() = navManager.navigateUpOrToRoot()
 }

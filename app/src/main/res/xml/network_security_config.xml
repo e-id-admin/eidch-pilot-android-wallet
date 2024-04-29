@@ -10,6 +10,7 @@
         <domain includeSubdomains="true">astra.admin.ch</domain>
         <trust-anchors>
             <certificates src="@raw/quovadis_root_ca_2_g3" />
+            <certificates src="@raw/digicert_global_root_g2" />
         </trust-anchors>
     </domain-config>
     <domain-config cleartextTrafficPermitted="false">

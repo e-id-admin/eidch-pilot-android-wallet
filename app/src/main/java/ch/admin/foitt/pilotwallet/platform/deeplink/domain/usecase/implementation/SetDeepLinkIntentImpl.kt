@@ -7,7 +7,7 @@ import javax.inject.Inject
 class SetDeepLinkIntentImpl @Inject constructor(
     private val deepLinkIntentRepository: DeepLinkIntentRepository,
 ) : SetDeepLinkIntent {
-    override fun invoke(data: String?) {
-        deepLinkIntentRepository.deepLink = data
+    override fun invoke(data: String) {
+        deepLinkIntentRepository.set(data)
     }
 }

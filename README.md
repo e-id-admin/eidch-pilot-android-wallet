@@ -57,10 +57,10 @@ To be able to build the project, you need at least Java 17 and Android Studio 20
 You can also build the app directly using following command:
 
 ```sh
-$ ./gradlew app:assembleDevDebug
+$ ./gradlew app:assembleProdRelease
 ```
 
-You can then find the generated APK under `app/build/outputs/apk/dev/debug/app-dev-debug.apk`.
+You can then find the generated APK under `app/build/outputs/apk/prod/release/app-prod-release.apk`.
 
 > [!NOTE]
 > Please be aware that for building from the command line, you must have set up your own keystore.

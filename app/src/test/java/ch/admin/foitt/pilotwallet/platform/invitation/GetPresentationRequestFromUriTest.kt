@@ -104,7 +104,7 @@ class GetPresentationRequestFromUriTest {
             mockFetchPresentationRequest.invoke(url = any())
         }
 
-        Assert.assertTrue(useCaseResult.getError() is InvitationError.InvalidInvitation)
+        Assert.assertTrue(useCaseResult.getError() is InvitationError.InvalidPresentationRequest)
     }
 
     @Test

@@ -9,17 +9,14 @@ import ch.admin.foitt.pilotwallet.platform.biometrics.domain.usecase.GetBiometri
 import ch.admin.foitt.pilotwallet.platform.biometrics.domain.usecase.ResetBiometrics
 import ch.admin.foitt.pilotwallet.platform.database.domain.model.OpenDatabaseError
 import ch.admin.foitt.pilotwallet.platform.database.domain.usecase.OpenAppDatabase
-import ch.admin.foitt.pilotwallet.platform.deeplink.domain.usecase.AfterLoginNavigation
 import ch.admin.foitt.pilotwallet.platform.login.domain.model.LoginError
 import ch.admin.foitt.pilotwallet.platform.login.domain.model.LoginWithBiometricsError
 import ch.admin.foitt.pilotwallet.platform.login.domain.model.toLoginWithBiometricsError
 import ch.admin.foitt.pilotwallet.platform.login.domain.usecase.LoginWithBiometrics
-import ch.admin.foitt.pilotwallet.platform.navigation.domain.model.NavigationAction
 import ch.admin.foitt.pilotwallet.platform.passphrase.domain.model.LoadAndDecryptPassphraseError
 import ch.admin.foitt.pilotwallet.platform.passphrase.domain.usecase.LoadAndDecryptPassphrase
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.coroutines.coroutineBinding
-import com.github.michaelbull.result.map
 import com.github.michaelbull.result.mapError
 import com.github.michaelbull.result.onFailure
 import timber.log.Timber
@@ -30,12 +27,11 @@ class LoginWithBiometricsImpl @Inject constructor(
     private val loadAndDecryptPassphrase: LoadAndDecryptPassphrase,
     private val launchBiometricPrompt: LaunchBiometricPrompt,
     private val getBiometricsCipher: GetBiometricsCipher,
-    private val afterLoginNavigation: AfterLoginNavigation,
     private val openAppDatabase: OpenAppDatabase,
     private val resetBiometrics: ResetBiometrics,
 ) : LoginWithBiometrics {
     @CheckResult
-    override suspend fun invoke(promptWrapper: BiometricPromptWrapper): Result<NavigationAction, LoginWithBiometricsError> {
+    override suspend fun invoke(promptWrapper: BiometricPromptWrapper): Result<Unit, LoginWithBiometricsError> {
         val result: Result<Unit, LoginWithBiometricsError> = coroutineBinding {
             val decryptionCipher: Cipher = getBiometricsCipher().mapError(
                 GetBiometricsCipherError::toLoginWithBiometricsError
@@ -68,8 +64,6 @@ class LoginWithBiometricsImpl @Inject constructor(
         return result
             .onFailure { loginWithBiometricsError ->
                 onLoginFailure(loginWithBiometricsError)
-            }.map {
-                afterLoginNavigation()
             }
     }
 

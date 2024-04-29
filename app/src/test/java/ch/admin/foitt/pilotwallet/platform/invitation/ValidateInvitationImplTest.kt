@@ -143,7 +143,7 @@ class ValidateInvitationImplTest {
     fun `a presentation request validation failure should return an error`() = runTest {
         coEvery {
             mockGetPresentationRequestFromUri.invoke(uri = any())
-        } returns Err(InvitationError.InvalidInvitation)
+        } returns Err(InvitationError.InvalidPresentationRequest)
 
         val input = "https://whatever"
         val useCaseResult = validateInvitationUseCase(input = input)

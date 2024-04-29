@@ -23,15 +23,15 @@ class DeepLinkIntentRepositoryTest {
 
     @Test
     fun `Set, get and delete a deepLink`() = runTest {
-        intentRepository.deepLink = testDeepLink
+        intentRepository.set(testDeepLink)
 
-        val retrievedIntent = intentRepository.deepLink
+        val retrievedIntent = intentRepository.get()
 
         Assert.assertEquals(testDeepLink, retrievedIntent)
 
-        intentRepository.deepLink = null
+        intentRepository.reset()
 
-        val retrievedIntent2 = intentRepository.deepLink
+        val retrievedIntent2 = intentRepository.get()
 
         Assert.assertNull(retrievedIntent2)
     }

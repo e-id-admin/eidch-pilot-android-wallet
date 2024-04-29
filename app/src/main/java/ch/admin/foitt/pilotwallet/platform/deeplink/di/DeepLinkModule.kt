@@ -2,9 +2,9 @@ package ch.admin.foitt.pilotwallet.platform.deeplink.di
 
 import ch.admin.foitt.pilotwallet.platform.deeplink.data.DeepLinkIntentRepositoryImpl
 import ch.admin.foitt.pilotwallet.platform.deeplink.domain.repository.DeepLinkIntentRepository
-import ch.admin.foitt.pilotwallet.platform.deeplink.domain.usecase.AfterLoginNavigation
+import ch.admin.foitt.pilotwallet.platform.deeplink.domain.usecase.HandleDeeplink
 import ch.admin.foitt.pilotwallet.platform.deeplink.domain.usecase.SetDeepLinkIntent
-import ch.admin.foitt.pilotwallet.platform.deeplink.domain.usecase.implementation.AfterLoginNavigationImpl
+import ch.admin.foitt.pilotwallet.platform.deeplink.domain.usecase.implementation.HandleDeeplinkImpl
 import ch.admin.foitt.pilotwallet.platform.deeplink.domain.usecase.implementation.SetDeepLinkIntentImpl
 import dagger.Binds
 import dagger.Module
@@ -21,14 +21,14 @@ class DeepLinkModule
 internal interface DeepLinkBindingsModule {
     @Binds
     @ActivityRetainedScoped
-    fun provideIntentRepository(
+    fun bindIntentRepository(
         repo: DeepLinkIntentRepositoryImpl
     ): DeepLinkIntentRepository
 
     @Binds
-    fun bindAfterLoginNavigation(
-        useCase: AfterLoginNavigationImpl
-    ): AfterLoginNavigation
+    fun bindHandleDeeplink(
+        useCase: HandleDeeplinkImpl
+    ): HandleDeeplink
 
     @Binds
     fun bindSetDeepLinkIntent(

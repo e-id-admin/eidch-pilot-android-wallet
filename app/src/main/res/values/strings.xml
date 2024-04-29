@@ -50,9 +50,9 @@
   <string name="pinSetup_content">Sichern Sie Ihre pilotWallet, damit Ihre Nachweise geschützt sind.</string>
   <string name="pinSetup_confirm_title">Code bestätigen</string>
   <string name="pinSetup_confirm_content">Den Code zur Bestätigung wiederholen.</string>
-  <string name="biometricSetup_title">Biometrics verwenden</string>
+  <string name="biometricSetup_title">Mit Biometrics entsperren</string>
   <string name="biometricSetup_content">Möchten Sie Biometrics zum Entsperren der pilotWallet aktivieren?</string>
-  <string name="biometricSetup_disabled_content">Die pilotWallet ermöglicht es Ihnen, Ihren digitalen Nachweis mit biometrischen Daten zu sichern.</string>
+  <string name="biometricSetup_disabled_content">Aktivieren Sie Biometrics, um Ihre digitalen Nachweise sicher zu speichern.</string>
   <string name="biometricSetup_reason">Sie können weiterhin Ihren Code verwenden, sollte es mit den Biometrics mal nicht klappen.</string>
   <string name="biometricSetup_actionButton">Mit %s weiter</string>
   <string name="biometricSetup_dismissButton">Überspringen</string>

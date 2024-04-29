@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import ch.admin.foitt.pilotwallet.feature.login.domain.usecase.GetLockoutDuration
 import ch.admin.foitt.pilotwallet.feature.login.domain.usecase.IncreaseFailedLoginAttemptsCounter
 import ch.admin.foitt.pilotwallet.feature.login.domain.usecase.ResetLockout
-import ch.admin.foitt.pilotwallet.platform.deeplink.domain.usecase.AfterLoginNavigation
+import ch.admin.foitt.pilotwallet.platform.deeplink.domain.usecase.HandleDeeplink
 import ch.admin.foitt.pilotwallet.platform.login.domain.model.LoginError
 import ch.admin.foitt.pilotwallet.platform.login.domain.usecase.LoginWithPin
 import ch.admin.foitt.pilotwallet.platform.pinInput.domain.model.PinCheckResult
@@ -26,7 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PinLoginViewModel @Inject constructor(
     private val loginWithPin: LoginWithPin,
-    private val afterLoginNavigation: AfterLoginNavigation,
+    private val handleDeeplink: HandleDeeplink,
     private val resetLockout: ResetLockout,
     private val getLockoutDuration: GetLockoutDuration,
     private val increaseFailedLoginCounter: IncreaseFailedLoginAttemptsCounter,
@@ -73,7 +73,7 @@ class PinLoginViewModel @Inject constructor(
         _pinCheckResult.value = PinCheckResult.Reset
         if (result is PinInputResult.Success && countdown.value.isBlank()) {
             viewModelScope.launch {
-                afterLoginNavigation().navigate()
+                handleDeeplink(fromOnboarding = false).navigate()
             }.trackCompletion(_isLoading)
         }
     }

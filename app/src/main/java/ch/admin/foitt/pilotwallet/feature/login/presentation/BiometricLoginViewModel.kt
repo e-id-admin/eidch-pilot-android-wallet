@@ -7,6 +7,7 @@ import ch.admin.foitt.pilotwallet.platform.biometricPrompt.domain.model.Biometri
 import ch.admin.foitt.pilotwallet.platform.biometricPrompt.domain.usecase.GetAuthenticators
 import ch.admin.foitt.pilotwallet.platform.biometricPrompt.presentation.AndroidBiometricPrompt
 import ch.admin.foitt.pilotwallet.platform.biometrics.domain.usecase.ResetBiometrics
+import ch.admin.foitt.pilotwallet.platform.deeplink.domain.usecase.HandleDeeplink
 import ch.admin.foitt.pilotwallet.platform.login.domain.model.CanUseBiometricsForLoginResult
 import ch.admin.foitt.pilotwallet.platform.login.domain.model.LoginError
 import ch.admin.foitt.pilotwallet.platform.login.domain.usecase.CanUseBiometricsForLogin
@@ -34,6 +35,7 @@ class BiometricLoginViewModel @Inject constructor(
     private val loginWithBiometrics: LoginWithBiometrics,
     private val resetBiometrics: ResetBiometrics,
     private val resetLockout: ResetLockout,
+    private val handleDeeplink: HandleDeeplink,
     setTopBarState: SetTopBarState,
 ) : ScreenViewModel(setTopBarState) {
     override val topBarState = TopBarState.RootNoSettings
@@ -59,9 +61,9 @@ class BiometricLoginViewModel @Inject constructor(
             )
 
             loginWithBiometrics(biometricPromptWrapper)
-                .onSuccess { navigationAction ->
+                .onSuccess {
                     resetLockout()
-                    navigationAction.navigate()
+                    handleDeeplink(fromOnboarding = false).navigate()
                 }.onFailure { loginError ->
                     when (loginError) {
                         LoginError.Cancelled -> {}

@@ -2,9 +2,9 @@ package ch.admin.foitt.pilotwallet.feature.onboarding.presentation
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import ch.admin.foitt.pilotwallet.feature.onboarding.navigation.OnboardingNavGraph
 import ch.admin.foitt.pilotwallet.platform.biometricPrompt.domain.model.BiometricManagerResult
 import ch.admin.foitt.pilotwallet.platform.biometricPrompt.domain.usecase.BiometricsStatus
+import ch.admin.foitt.pilotwallet.platform.deeplink.domain.usecase.HandleDeeplink
 import ch.admin.foitt.pilotwallet.platform.navArgs.domain.model.RegisterBiometricsNavArg
 import ch.admin.foitt.pilotwallet.platform.navigation.NavigationManager
 import ch.admin.foitt.pilotwallet.platform.onboardingState.domain.SaveOnboardingState
@@ -15,7 +15,6 @@ import ch.admin.foitt.pilotwallet.platform.scaffold.domain.model.TopBarState
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.usecase.SetTopBarState
 import ch.admin.foitt.pilotwallet.platform.scaffold.presentation.ScreenViewModel
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.ConfirmPinScreenDestination
-import ch.admin.foitt.pilotwalletcomposedestinations.destinations.HomeScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.RegisterBiometricsScreenDestination
 import com.github.michaelbull.result.mapBoth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +29,7 @@ class ConfirmPinViewModel @Inject constructor(
     private val biometricsStatus: BiometricsStatus,
     private val initializePassphrase: InitializePassphrase,
     private val saveOnboardingState: SaveOnboardingState,
+    private val handleDeeplink: HandleDeeplink,
     private val navManager: NavigationManager,
     setTopBarState: SetTopBarState,
     savedStateHandle: SavedStateHandle,
@@ -68,17 +68,19 @@ class ConfirmPinViewModel @Inject constructor(
         )
 
     fun onPinInputResult(result: PinInputResult) {
-        _pinCheckResult.value = PinCheckResult.Reset
-        if (result is PinInputResult.Success) {
-            handlePinSuccess(result.pin)
+        viewModelScope.launch {
+            _pinCheckResult.value = PinCheckResult.Reset
+            if (result is PinInputResult.Success) {
+                handlePinSuccess(result.pin)
+            }
         }
     }
 
-    private fun handlePinSuccess(pin: String) {
+    private suspend fun handlePinSuccess(pin: String) {
         if (isBiometricAuthenticationAvailable) {
             navigateToBiometrics(pin)
         } else {
-            navigateToSuccess()
+            handleDeeplink(fromOnboarding = true).navigate()
         }
     }
 
@@ -87,13 +89,6 @@ class ConfirmPinViewModel @Inject constructor(
             RegisterBiometricsScreenDestination(
                 navArgs = RegisterBiometricsNavArg(pin = pin)
             )
-        )
-    }
-
-    private fun navigateToSuccess() {
-        navManager.navigateToAndPopUpTo(
-            direction = HomeScreenDestination,
-            route = OnboardingNavGraph.NAME,
         )
     }
 }

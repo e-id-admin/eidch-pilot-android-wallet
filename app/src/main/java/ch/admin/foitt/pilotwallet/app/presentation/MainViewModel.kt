@@ -41,10 +41,12 @@ class MainViewModel @Inject constructor(
         // when we come back to the app after a deeplink was opened we get an intent that just contains the package name and main activity
         val intentHasNullProperties = intent.action == null || intent.scheme == null || intent.dataString == null
 
-        if (!isLauncherIntent && !intentHasNullProperties) {
-            setDeepLinkIntent(intent.dataString)
-        } else {
+        if (isLauncherIntent || intentHasNullProperties) {
             Timber.d("Intent considered useless")
+        } else {
+            intent.dataString?.let { intentDataString ->
+                setDeepLinkIntent(intentDataString)
+            } ?: Timber.w("Intent dataString null")
         }
     }
 
