@@ -44,9 +44,9 @@ fun PresentationRequestScreen(viewModel: PresentationRequestViewModel) {
     BackHandler(onBack = viewModel::onDecline)
     PresentationRequestContent(
         verifierName = viewModel.verifierName,
-        verifierImage = viewModel.verifierLogo.collectAsStateWithLifecycle().value,
+        verifierImage = viewModel.verifierLogoPainter.collectAsStateWithLifecycle().value,
         requestedClaims = viewModel.requestedClaims.collectAsStateWithLifecycle().value,
-        credentialCardState = viewModel.credentialState.collectAsStateWithLifecycle(initialValue = CredentialCardState.EMPTY).value,
+        credentialCardState = viewModel.credentialState.collectAsStateWithLifecycle().value,
         isLoading = viewModel.isLoading.collectAsStateWithLifecycle().value,
         isSubmitting = viewModel.isSubmitting.collectAsStateWithLifecycle().value,
         onSubmit = viewModel::submit,

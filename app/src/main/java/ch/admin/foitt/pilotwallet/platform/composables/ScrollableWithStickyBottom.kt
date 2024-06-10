@@ -1,16 +1,20 @@
 package ch.admin.foitt.pilotwallet.platform.composables
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -88,6 +92,61 @@ fun ScrollableBoxWithStickyBottom(
         ),
     ) {
         scrollableContent()
+    }
+}
+
+@SuppressLint(
+    "ComposableLambdaParameterNaming",
+    "ComposableLambdaParameterPosition"
+)
+@Composable
+fun ScrollableLazyColumnWithStickyBottom(
+    modifier: Modifier = Modifier,
+    useStatusBarInsets: Boolean = true,
+    useNavigationBarInsets: Boolean = false,
+    stickyBottomPadding: PaddingValues = PaddingValues(
+        start = Sizes.s04,
+        end = Sizes.s04,
+        bottom = Sizes.s04
+    ),
+    stickyBottomContent: @Composable ColumnScope.() -> Unit,
+    contentPadding: PaddingValues = PaddingValues(
+        start = Sizes.s06,
+        end = Sizes.s06,
+        top = Sizes.s16,
+        bottom = Sizes.s06
+    ),
+    lazyListContent: LazyListScope.() -> Unit,
+) = ScrollableWithStickyBottomContainer(
+    modifier = modifier,
+    stickyBottomPadding = stickyBottomPadding,
+    stickyBottomContent = stickyBottomContent,
+    useStatusBarInsets = useStatusBarInsets,
+    useNavigationBarInsets = useNavigationBarInsets,
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = contentPadding,
+    ) {
+        if (useStatusBarInsets) {
+            item {
+                Spacer(
+                    Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                )
+            }
+        }
+        lazyListContent()
+        if (useNavigationBarInsets) {
+            item {
+                Spacer(
+                    Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                )
+            }
+        }
     }
 }
 

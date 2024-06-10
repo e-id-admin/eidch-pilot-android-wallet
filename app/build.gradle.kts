@@ -2,6 +2,7 @@ plugins {
     id("android-application")
     id("jacoco-android-app")
     alias(libs.plugins.devtools.ksp)
+    alias(libs.plugins.junit5)
 }
 
 android {
@@ -19,18 +20,12 @@ android {
         manifestPlaceholders["deepLinkCredentialOfferScheme"] = schemeCredentialOffer
         manifestPlaceholders["deepLinkPresentationRequestScheme"] = schemePresentationRequest
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
         buildConfigField(
-            type = "String",
-            name = "SCHEME_CREDENTIAL_OFFER",
-            value = "\"$schemeCredentialOffer\""
+            type = "String", name = "SCHEME_CREDENTIAL_OFFER", value = "\"$schemeCredentialOffer\""
         )
 
         buildConfigField(
-            type = "String",
-            name = "SCHEME_PRESENTATION_REQUEST",
-            value = "\"$schemePresentationRequest\""
+            type = "String", name = "SCHEME_PRESENTATION_REQUEST", value = "\"$schemePresentationRequest\""
         )
     }
 
@@ -84,17 +79,15 @@ android {
     }
     ksp {
         arg(
-            "compose-destinations.codeGenPackageName",
-            "ch.admin.foitt.pilotwalletcomposedestinations"
+            "compose-destinations.codeGenPackageName", "ch.admin.foitt.pilotwalletcomposedestinations"
         )
+        arg("room.generateKotlin", "true")
     }
 }
 
 dependencies {
-
     implementation(project(":theme"))
     implementation(project(":openid4vc"))
-
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.appcompat)
@@ -105,13 +98,12 @@ dependencies {
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
 
-
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.constraintlayout.compose)
-
 
     implementation(libs.androidx.core.splashscreen)
 
@@ -163,19 +155,20 @@ dependencies {
     implementation(libs.aboutlibraries.core)
     implementation(libs.aboutlibraries.compose)
 
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // Testing
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.junit)
     testImplementation(libs.archunit)
     testImplementation(libs.mockk)
     testImplementation(libs.androidx.room.testing)
 
-    androidTestImplementation(composeBom)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+    testImplementation(libs.junit.jupiter.params)
 
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    androidTestImplementation(libs.junit.jupiter.api)
+    androidTestImplementation(composeBom)
+    androidTestImplementation(libs.android.test.compose)
 }

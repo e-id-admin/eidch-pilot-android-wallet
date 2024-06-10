@@ -25,7 +25,7 @@ class StartViewModel @Inject constructor(
     fun navigateToFirstScreen() {
         viewModelScope.launch {
             when (onboardingStateRepository.getOnboardingState()) {
-                true -> navigateToLogin().navigate()
+                true -> navManager.navigateToAndClearCurrent(navigateToLogin())
                 false -> navManager.navigateToAndClearCurrent(OnboardingIntroScreenDestination)
             }
         }

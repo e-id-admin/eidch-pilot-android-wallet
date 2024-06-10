@@ -31,12 +31,13 @@ import io.mockk.just
 import io.mockk.runs
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import javax.crypto.Cipher
 
 class EnableBiometricsTest {
@@ -70,7 +71,7 @@ class EnableBiometricsTest {
 
     private lateinit var testedUseCase: EnableBiometrics
 
-    @Before
+    @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
 
@@ -93,7 +94,7 @@ class EnableBiometricsTest {
         coEvery { mockResetBiometrics() } returns Ok(Unit)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -121,8 +122,8 @@ class EnableBiometricsTest {
     @Test
     fun `A successful enable from the settings follows specific steps and returns a success`() = runTest {
         val result = testedUseCase(mockPromptWrapper, "pin", fromSetup = false)
-        Assert.assertNotNull(result.get())
-        Assert.assertNull(result.getError())
+        assertNotNull(result.get())
+        assertNull(result.getError())
 
         coVerifyOrder {
             mockResetBiometrics.invoke()

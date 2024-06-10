@@ -1,5 +1,10 @@
 package ch.admin.foitt.pilotwallet.platform.credential.presentation
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -22,25 +27,34 @@ import ch.admin.foitt.pilotwallet.theme.labelBackground
 internal fun CredentialStatusBadge(
     status: CredentialStatus?,
     modifier: Modifier = Modifier,
-) = Box(
-    modifier = modifier
-        .background(
-            color = when (status) {
-                null -> Color.Transparent
-                CredentialStatus.VALID,
-                CredentialStatus.UNKNOWN -> MaterialTheme.colorScheme.labelBackground
-                CredentialStatus.INVALID -> MaterialTheme.colorScheme.errorContainer
-            },
-            shape = RoundedCornerShape(Sizes.s04)
-        )
-        .padding(start = Sizes.s03, end = Sizes.s03),
-) {
-    status?.let {
-        CredentialStatusLabel(
-            status = status,
-            modifier = modifier
-        )
-    } ?: Spacer(modifier.height(Sizes.labelHeight))
+) = AnimatedContent(
+    modifier = modifier,
+    targetState = status,
+    transitionSpec = {
+        fadeIn(animationSpec = tween(400)) togetherWith fadeOut(animationSpec = tween(400))
+    },
+    label = "fadingAnimation",
+) { credentialStatus ->
+    Box(
+        modifier = Modifier
+            .background(
+                color = when (credentialStatus) {
+                    null -> Color.Transparent
+                    CredentialStatus.VALID,
+                    CredentialStatus.UNKNOWN -> MaterialTheme.colorScheme.labelBackground
+                    CredentialStatus.INVALID -> MaterialTheme.colorScheme.errorContainer
+                },
+                shape = RoundedCornerShape(Sizes.s04)
+            )
+            .padding(start = Sizes.s03, end = Sizes.s03),
+    ) {
+        credentialStatus?.let {
+            CredentialStatusLabel(
+                status = credentialStatus,
+                modifier = modifier
+            )
+        } ?: Spacer(modifier.height(Sizes.labelHeight))
+    }
 }
 
 private class CredentialStatusProvider : PreviewParameterProvider<CredentialStatus> {

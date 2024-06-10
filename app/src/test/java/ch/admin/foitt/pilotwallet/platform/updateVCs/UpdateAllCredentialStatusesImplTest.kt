@@ -15,9 +15,9 @@ import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class UpdateAllCredentialStatusesImplTest {
     @MockK
@@ -28,13 +28,12 @@ class UpdateAllCredentialStatusesImplTest {
 
     private lateinit var updateAllCredentialStatuses: UpdateAllCredentialStatuses
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
         updateAllCredentialStatuses = UpdateAllCredentialStatusesImpl(
-            mockGetAllCredentials,
-            mockGetAndRefreshCredentialValidity
+            mockGetAllCredentials, mockGetAndRefreshCredentialValidity
         )
 
         coEvery { mockGetAllCredentials() } returns Ok(credentials)
@@ -63,7 +62,7 @@ class UpdateAllCredentialStatusesImplTest {
         }
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

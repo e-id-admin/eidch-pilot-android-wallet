@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -158,6 +159,19 @@ object WalletTexts {
     )
 
     @Composable
+    fun TitleMedium(
+        text: String,
+        modifier: Modifier = Modifier,
+    ) = Text(
+        text = text,
+        color = MaterialTheme.colorScheme.onBackground,
+        style = MaterialTheme.typography.titleMedium,
+        textAlign = TextAlign.Start,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier,
+    )
+
+    @Composable
     fun TitleSmall(
         text: String,
         modifier: Modifier = Modifier,
@@ -242,7 +256,7 @@ object WalletTexts {
     fun LabelMedium(
         text: String,
         modifier: Modifier = Modifier,
-        color: Color = Colors.grey05,
+        color: Color = MaterialTheme.colorScheme.textLabels,
     ) = Text(
         text = text,
         color = color,
@@ -256,7 +270,7 @@ object WalletTexts {
     fun LabelMedium(
         text: AnnotatedString,
         modifier: Modifier = Modifier,
-        color: Color = Colors.grey05,
+        color: Color = MaterialTheme.colorScheme.textLabels,
     ) = Text(
         text = text,
         color = color,
@@ -270,13 +284,46 @@ object WalletTexts {
     fun LabelSmall(
         text: String,
         modifier: Modifier = Modifier,
-        color: Color = Colors.grey05,
+        color: Color = MaterialTheme.colorScheme.textLabels,
     ) = Text(
         text = text,
         color = color,
         style = MaterialTheme.typography.labelSmall,
         textAlign = TextAlign.Start,
         overflow = TextOverflow.Ellipsis,
+        modifier = modifier,
+    )
+
+    @Composable
+    fun LabelSmallBoldUnderlined(
+        text: String,
+        modifier: Modifier = Modifier,
+        color: Color = MaterialTheme.colorScheme.textLabels,
+    ) = Text(
+        text = text,
+        color = color,
+        style = MaterialTheme.typography.labelSmall.copy(
+            fontWeight = FontWeight.Bold,
+            textDecoration = TextDecoration.Underline
+        ),
+        textAlign = TextAlign.Start,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier,
+    )
+
+    @Composable
+    fun ListLabelMedium(
+        text: String,
+        modifier: Modifier = Modifier,
+        color: Color = MaterialTheme.colorScheme.onBackground,
+    ) = Text(
+        text = text,
+        color = color,
+        style = MaterialTheme.typography.bodySmall,
+        textAlign = TextAlign.Start,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1,
+        fontWeight = FontWeight.Medium,
         modifier = modifier,
     )
 

@@ -3,7 +3,7 @@ package ch.admin.foitt.pilotwallet.platform.ssi.data.repository
 import ch.admin.foitt.pilotwallet.platform.database.data.dao.CredentialDao
 import ch.admin.foitt.pilotwallet.platform.database.domain.model.Credential
 import ch.admin.foitt.pilotwallet.platform.database.domain.model.CredentialStatus
-import ch.admin.foitt.pilotwallet.platform.database.domain.model.DatabaseWrapper
+import ch.admin.foitt.pilotwallet.platform.database.domain.repository.DatabaseRepository
 import ch.admin.foitt.pilotwallet.platform.di.IoDispatcher
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.model.CredentialRepositoryError
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.model.SsiError
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CredentialRepoImpl @Inject constructor(
-    databaseWrapper: DatabaseWrapper,
+    databaseRepository: DatabaseRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : CredentialRepo {
     override suspend fun insert(credential: Credential): Result<Long, CredentialRepositoryError> = runSuspendCatching {
@@ -86,5 +86,5 @@ class CredentialRepoImpl @Inject constructor(
     }
 
     private suspend fun dao(): CredentialDao = suspendUntilNonNull { daoFlow.value }
-    private val daoFlow = databaseWrapper.credentialDaoFlow
+    private val daoFlow = databaseRepository.credentialDaoFlow
 }

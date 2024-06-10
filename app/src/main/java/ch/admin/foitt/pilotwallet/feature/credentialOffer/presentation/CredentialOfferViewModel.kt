@@ -3,11 +3,15 @@ package ch.admin.foitt.pilotwallet.feature.credentialOffer.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import ch.admin.foitt.pilotwallet.feature.credentialOffer.domain.model.CredentialOfferIssuer
-import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.GetPainterFromData
+import ch.admin.foitt.pilotwallet.platform.activity.domain.usecase.SaveActivity
+import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.GetDrawableFromData
 import ch.admin.foitt.pilotwallet.platform.credential.domain.usecase.GetCredentialPreviewFlow
 import ch.admin.foitt.pilotwallet.platform.credential.presentation.adapter.GetCredentialCardState
 import ch.admin.foitt.pilotwallet.platform.credential.presentation.model.CredentialCardState
+import ch.admin.foitt.pilotwallet.platform.database.domain.model.Activity
+import ch.admin.foitt.pilotwallet.platform.database.domain.model.ActivityType
 import ch.admin.foitt.pilotwallet.platform.database.domain.model.CredentialIssuerDisplay
+import ch.admin.foitt.pilotwallet.platform.database.domain.model.CredentialStatus
 import ch.admin.foitt.pilotwallet.platform.navigation.NavigationManager
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.model.TopBarState
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.usecase.SetTopBarState
@@ -18,6 +22,7 @@ import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.GetCredentialClaim
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.GetLocalizedCredentialIssuerDisplay
 import ch.admin.foitt.pilotwallet.platform.updateCredentialStatus.domain.usecase.UpdateCredentialStatus
 import ch.admin.foitt.pilotwallet.platform.utils.launchWithDelayedLoading
+import ch.admin.foitt.pilotwallet.platform.utils.toPainter
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.CredentialOfferErrorScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.CredentialOfferScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.DeclineCredentialOfferScreenDestination
@@ -40,7 +45,8 @@ class CredentialOfferViewModel @Inject constructor(
     private val getLocalizedCredentialIssuerDisplay: GetLocalizedCredentialIssuerDisplay,
     getCredentialPreviewFlow: GetCredentialPreviewFlow,
     private val getCredentialCardState: GetCredentialCardState,
-    private val getPainterFromData: GetPainterFromData,
+    private val getDrawableFromData: GetDrawableFromData,
+    private val saveActivity: SaveActivity,
     setTopBarState: SetTopBarState,
 ) : ScreenViewModel(
     setTopBarState,
@@ -82,9 +88,20 @@ class CredentialOfferViewModel @Inject constructor(
         }
     }
 
-    private suspend fun CredentialIssuerDisplay.toCredentialOfferIssuer() = CredentialOfferIssuer(name, getPainterFromData(image))
+    private suspend fun CredentialIssuerDisplay.toCredentialOfferIssuer() =
+        CredentialOfferIssuer(name, getDrawableFromData(image)?.toPainter())
 
-    fun onAcceptClicked() = navManager.navigateUpOrToRoot()
+    fun onAcceptClicked() {
+        viewModelScope.launch {
+            val activityToSave = Activity(
+                credentialId = credentialId,
+                credentialSnapshotStatus = credentialCardState.value.status ?: CredentialStatus.UNKNOWN,
+                type = ActivityType.CREDENTIAL_RECEIVED,
+            )
+            saveActivity(activityToSave)
+            navManager.navigateUpOrToRoot()
+        }
+    }
 
     fun onDeclineClicked() {
         navManager.navigateTo(

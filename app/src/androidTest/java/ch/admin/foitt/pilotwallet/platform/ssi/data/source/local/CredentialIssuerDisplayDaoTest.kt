@@ -3,40 +3,35 @@ package ch.admin.foitt.pilotwallet.platform.ssi.data.source.local
 import android.database.sqlite.SQLiteConstraintException
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SmallTest
 import ch.admin.foitt.pilotwallet.platform.database.data.dao.CredentialDao
 import ch.admin.foitt.pilotwallet.platform.database.data.dao.CredentialIssuerDisplayDao
 import ch.admin.foitt.pilotwallet.platform.database.domain.AppDatabase
 import ch.admin.foitt.pilotwallet.platform.database.domain.model.CredentialIssuerDisplay
 import ch.admin.foitt.pilotwallet.platform.database.domain.model.DisplayLanguage
-import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.correct
+import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.CORRECT
+import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.FALLBACK
 import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.credential1
 import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.credential2
 import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.credentialIssuerDisplay1
 import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.credentialIssuerDisplay2
-import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.fallback
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
-@RunWith(AndroidJUnit4::class)
-@SmallTest
 class CredentialIssuerDisplayDaoTest {
 
     private lateinit var database: AppDatabase
     private lateinit var credentialDao: CredentialDao
     private lateinit var credentialIssuerDisplayDao: CredentialIssuerDisplayDao
 
-    @Before
+    @BeforeEach
     fun setupDatabase() {
         database = Room.inMemoryDatabaseBuilder(
-            ApplicationProvider.getApplicationContext(),
-            AppDatabase::class.java
+            ApplicationProvider.getApplicationContext(), AppDatabase::class.java
         ).allowMainThreadQueries().build()
 
         credentialDao = database.credentialDao()
@@ -46,14 +41,16 @@ class CredentialIssuerDisplayDaoTest {
         credentialIssuerDisplayDao = database.credentialIssuerDisplayDao()
     }
 
-    @After
+    @AfterEach
     fun closeDatabase() {
         database.close()
     }
 
-    @Test(expected = SQLiteConstraintException::class)
+    @Test
     fun insertWithoutMatchingForeignKeyShouldThrow() = runTest {
-        credentialIssuerDisplayDao.insertAll(listOf(credentialIssuerDisplay1.copy(credentialId = -1)))
+        assertThrows<SQLiteConstraintException> {
+            credentialIssuerDisplayDao.insertAll(listOf(credentialIssuerDisplay1.copy(credentialId = -1)))
+        }
     }
 
     @Test
@@ -69,27 +66,27 @@ class CredentialIssuerDisplayDaoTest {
     @Test
     fun shouldReturnFallbackLocale() = runTest {
         val credentialIssuerDisplays = listOf(
-            CredentialIssuerDisplay(id = 1, credentialId = credential1.id, name = correct, locale = "xx_XX"),
-            CredentialIssuerDisplay(id = 2, credentialId = credential2.id, name = fallback, locale = DisplayLanguage.FALLBACK)
+            CredentialIssuerDisplay(id = 1, credentialId = credential1.id, name = CORRECT, locale = "xx_XX"),
+            CredentialIssuerDisplay(id = 2, credentialId = credential2.id, name = FALLBACK, locale = DisplayLanguage.FALLBACK)
         )
         credentialIssuerDisplayDao.insertAll(credentialIssuerDisplays)
 
         assertEquals(
-            "Should return localized IssuerDisplay if locale in db starts with requested language",
-            correct,
-            credentialIssuerDisplayDao.getByCredentialIdAndLanguage(credentialId = credential1.id, language = "xx")?.name
+            CORRECT,
+            credentialIssuerDisplayDao.getByCredentialIdAndLanguage(credentialId = credential1.id, language = "xx")?.name,
+            "Should return localized IssuerDisplay if locale in db starts with requested language"
         )
 
         assertEquals(
-            "Should return localized IssuerDisplay if locale in db matches requested language",
-            correct,
-            credentialIssuerDisplayDao.getByCredentialIdAndLanguage(credentialId = credential1.id, language = "xx_XX")?.name
+            CORRECT,
+            credentialIssuerDisplayDao.getByCredentialIdAndLanguage(credentialId = credential1.id, language = "xx_XX")?.name,
+            "Should return localized IssuerDisplay if locale in db matches requested language"
         )
 
         assertEquals(
-            "Should return fallback IssuerDisplay if requested language is not in db",
-            fallback,
-            credentialIssuerDisplayDao.getByCredentialIdAndLanguage(credentialId = credential2.id, language = "yy")?.name
+            FALLBACK,
+            credentialIssuerDisplayDao.getByCredentialIdAndLanguage(credentialId = credential2.id, language = "yy")?.name,
+            "Should return fallback IssuerDisplay if requested language is not in db"
         )
     }
 
@@ -99,13 +96,13 @@ class CredentialIssuerDisplayDaoTest {
 
         credentialDao.deleteById(credential1.id)
         assertNull(
-            "CredentialIssuer with foreign key for credential 1 should be deleted",
-            credentialIssuerDisplayDao.getByCredentialIdAndLanguage(credentialId = credential1.id, "xx")
+            credentialIssuerDisplayDao.getByCredentialIdAndLanguage(credentialId = credential1.id, "xx"),
+            "CredentialIssuer with foreign key for credential 1 should be deleted"
         )
         assertEquals(
-            "CredentialIssuer with foreign key for credential 2 should not be deleted",
             2L,
-            credentialIssuerDisplayDao.getByCredentialIdAndLanguage(credentialId = credential2.id, "xx")?.id
+            credentialIssuerDisplayDao.getByCredentialIdAndLanguage(credentialId = credential2.id, "xx")?.id,
+            "CredentialIssuer with foreign key for credential 2 should not be deleted"
         )
     }
 }

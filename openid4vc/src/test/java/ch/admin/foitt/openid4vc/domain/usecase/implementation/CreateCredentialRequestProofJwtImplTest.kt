@@ -13,9 +13,9 @@ import com.nimbusds.jose.crypto.ECDSAVerifier
 import com.nimbusds.jwt.SignedJWT
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.security.interfaces.ECPublicKey
 
 class CreateCredentialRequestProofJwtImplTest {
@@ -24,7 +24,7 @@ class CreateCredentialRequestProofJwtImplTest {
 
     private lateinit var createCredentialRequestProofJwtUseCase: CreateCredentialRequestProofJwtImpl
 
-    @Before
+    @BeforeEach
     fun setUp() {
         createCredentialRequestProofJwtUseCase = CreateCredentialRequestProofJwtImpl(testDispatcher)
     }
@@ -43,7 +43,7 @@ class CreateCredentialRequestProofJwtImplTest {
         val jwt = proofJwt.get()?.jwt
         val publicKey = keyPair.keyPair.public as ECPublicKey
         val verifier = ECDSAVerifier(publicKey)
-        assertTrue("", SignedJWT.parse(jwt).verify(verifier))
+        assertTrue(SignedJWT.parse(jwt).verify(verifier), "")
     }
 
     @Test

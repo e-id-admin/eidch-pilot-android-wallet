@@ -2,6 +2,7 @@ package ch.admin.foitt.pilotwallet.architectureTests
 
 import android.content.SharedPreferences
 import androidx.room.RoomDatabase
+import ch.admin.foitt.pilotwallet.app.MainActivity
 import ch.admin.foitt.pilotwallet.app.PilotWalletApplication
 import com.tngtech.archunit.core.domain.JavaAccess.Predicates.target
 import com.tngtech.archunit.core.domain.JavaClasses
@@ -74,7 +75,7 @@ class GeneralCodingTest : ArchitectureTest() {
         val rule = noClasses()
             .should()
             .dependOnClassesThat()
-            .resideInAPackage("..compose.material..")
+            .resideInAPackage("..compose.material") // TODO: use ..compose.material.. as soon as pull to refresh from material3 is used
             .because("mixing up material components leads to weird issues")
         rule.check(importedClasses)
     }
@@ -83,6 +84,8 @@ class GeneralCodingTest : ArchitectureTest() {
     fun `no field injection should be used`(importedClasses: JavaClasses) {
         val rule = noFields().that()
             .areNotDeclaredIn(PilotWalletApplication::class.java)
+            .and()
+            .areNotDeclaredIn(MainActivity::class.java)
             .should(BE_ANNOTATED_WITH_AN_INJECTION_ANNOTATION)
             .because(
                 "field injection is considered harmful; use constructor injection or setter injection instead; " +

@@ -14,10 +14,12 @@ import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.time.Duration
 
 class GetTimeoutDurationTest {
@@ -33,7 +35,7 @@ class GetTimeoutDurationTest {
         const val BLOCKING_TIME_MS = 5 * 60 * 1000L
     }
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
         mockkStatic(SystemClock::class)
@@ -44,7 +46,7 @@ class GetTimeoutDurationTest {
         coEvery { mockLockoutStartRepository.deleteStartingTime() } just Runs
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -60,7 +62,7 @@ class GetTimeoutDurationTest {
             val getTimeoutDuration =
                 GetLockoutDurationImpl(attemptsRepository = mockAttemptsRepository, lockoutStartRepository = mockLockoutStartRepository)
 
-            Assert.assertEquals(Duration.ZERO, getTimeoutDuration())
+            Assertions.assertEquals(Duration.ZERO, getTimeoutDuration())
         }
     }
 
@@ -74,18 +76,18 @@ class GetTimeoutDurationTest {
             GetLockoutDurationImpl(attemptsRepository = mockAttemptsRepository, lockoutStartRepository = mockLockoutStartRepository)
 
         repeat(MAX_LOGIN_ATTEMPTS - 1) { retry ->
-            Assert.assertEquals(
-                "Should not lock after attempt ${retry + 1}/$MAX_LOGIN_ATTEMPTS",
+            assertEquals(
                 Duration.ZERO,
-                getTimeoutDuration()
+                getTimeoutDuration(),
+                "Should not lock after attempt ${retry + 1}/$MAX_LOGIN_ATTEMPTS",
             )
         }
 
         repeat(2) { retry ->
-            Assert.assertEquals(
-                "Should lock after ${MAX_LOGIN_ATTEMPTS + retry} attempts",
+            assertEquals(
                 Duration.ofMillis(BLOCKING_TIME_MS),
-                getTimeoutDuration()
+                getTimeoutDuration(),
+                "Should lock after ${MAX_LOGIN_ATTEMPTS + retry} attempts"
             )
         }
 
@@ -115,9 +117,9 @@ class GetTimeoutDurationTest {
 
         listOf(timeoutStart + BLOCKING_TIME_MS - 1, 0, -1_000_000L, Long.MIN_VALUE + timeoutStart).forEach { currentUptime ->
             coEvery { SystemClock.elapsedRealtime() } returns currentUptime
-            Assert.assertTrue(
+            assertTrue(
+                getTimeoutDuration() > Duration.ZERO,
                 "lock time should be greater than zero",
-                getTimeoutDuration() > Duration.ZERO
             )
             coVerify(exactly = 0) {
                 mockAttemptsRepository.increase()
@@ -137,7 +139,11 @@ class GetTimeoutDurationTest {
             GetLockoutDurationImpl(attemptsRepository = mockAttemptsRepository, lockoutStartRepository = mockLockoutStartRepository)
         listOf(Long.MAX_VALUE, 2_000_000, timeoutStart + BLOCKING_TIME_MS + 1, timeoutStart + BLOCKING_TIME_MS).forEach { currentUptime ->
             coEvery { SystemClock.elapsedRealtime() } returns currentUptime
-            Assert.assertEquals("Lock time should be zero", Duration.ZERO, getTimeoutDuration())
+            assertEquals(
+                Duration.ZERO,
+                getTimeoutDuration(),
+                "Lock time should be zero"
+            )
             coVerify {
                 mockLockoutStartRepository.deleteStartingTime()
             }
@@ -157,10 +163,10 @@ class GetTimeoutDurationTest {
                 attemptsRepository = mockAttemptsRepository,
                 lockoutStartRepository = mockLockoutStartRepository
             )
-            Assert.assertEquals(
-                "lock time should be full blocking time",
+            assertEquals(
                 Duration.ofMillis(BLOCKING_TIME_MS),
-                getLockoutDuration()
+                getLockoutDuration(),
+                "lock time should be full blocking time"
             )
         }
         coVerify(exactly = 3) {
@@ -181,9 +187,9 @@ class GetTimeoutDurationTest {
                 attemptsRepository = mockAttemptsRepository,
                 lockoutStartRepository = mockLockoutStartRepository
             )
-            Assert.assertTrue(
-                "lock time should be not be full blocking time with offset of $offset",
-                getLockoutDuration() < Duration.ofMillis(BLOCKING_TIME_MS)
+            assertTrue(
+                getLockoutDuration() < Duration.ofMillis(BLOCKING_TIME_MS),
+                "lock time should be not be full blocking time with offset of $offset"
             )
         }
         coVerify(exactly = 0) {

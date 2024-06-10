@@ -18,10 +18,10 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class GetCompatibleCredentialsImplTest {
     private val testDispatcher = StandardTestDispatcher()
@@ -31,7 +31,7 @@ class GetCompatibleCredentialsImplTest {
     @MockK
     private lateinit var mockGetAllCredentialBodies: GetAllCredentialBodies
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
         getCompatibleCredentials = GetCompatibleCredentialsImpl(mockGetAllCredentialBodies, testDispatcher)
@@ -39,7 +39,7 @@ class GetCompatibleCredentialsImplTest {
         coEvery { mockGetAllCredentialBodies() } returns Ok(credentials)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

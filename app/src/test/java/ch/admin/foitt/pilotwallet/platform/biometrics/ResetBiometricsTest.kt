@@ -19,11 +19,11 @@ import io.mockk.runs
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.security.KeyStoreException
 
 class ResetBiometricsTest {
@@ -41,7 +41,7 @@ class ResetBiometricsTest {
 
     private lateinit var testUseCase: ResetBiometrics
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -79,7 +79,7 @@ class ResetBiometricsTest {
         assertTrue(result.getError() is ResetBiometricsError.Unexpected)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

@@ -3,8 +3,6 @@ package ch.admin.foitt.pilotwallet.platform.ssi.data.source.local
 import android.database.sqlite.SQLiteConstraintException
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SmallTest
 import ch.admin.foitt.pilotwallet.platform.database.data.dao.CredentialDao
 import ch.admin.foitt.pilotwallet.platform.database.data.dao.CredentialRawDao
 import ch.admin.foitt.pilotwallet.platform.database.domain.AppDatabase
@@ -13,22 +11,20 @@ import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.Credential
 import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.credentialRaw1
 import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.credentialRaw2
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
-@RunWith(AndroidJUnit4::class)
-@SmallTest
 class CredentialRawDaoTest {
 
     private lateinit var database: AppDatabase
     private lateinit var credentialDao: CredentialDao
     private lateinit var credentialRawDao: CredentialRawDao
 
-    @Before
+    @BeforeEach
     fun setupDatabase() {
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
@@ -41,7 +37,7 @@ class CredentialRawDaoTest {
         credentialRawDao = database.credentialRawDao()
     }
 
-    @After
+    @AfterEach
     fun closeDatabase() {
         database.close()
     }
@@ -50,14 +46,14 @@ class CredentialRawDaoTest {
     fun insertCredentialRawTest() = runTest {
         credentialRawDao.insert(credentialRaw1)
 
-        assertTrue(
-            credentialRawDao.getByCredentialId(credentialId = credential1.id).contains(credentialRaw1)
-        )
+        assertTrue(credentialRawDao.getByCredentialId(credentialId = credential1.id).contains(credentialRaw1))
     }
 
-    @Test(expected = SQLiteConstraintException::class)
+    @Test
     fun insertWithoutMatchingForeignKeyShouldThrow() {
-        credentialRawDao.insert(credentialRaw1.copy(credentialId = -1))
+        assertThrows<SQLiteConstraintException> {
+            credentialRawDao.insert(credentialRaw1.copy(credentialId = -1))
+        }
     }
 
     @Test
@@ -65,17 +61,17 @@ class CredentialRawDaoTest {
         credentialRawDao.insert(credentialRaw1.copy(keyIdentifier = "original"))
 
         assertEquals(
-            "Before updating credentialRaw has original value",
             "original",
-            credentialRawDao.getByCredentialId(1).first().keyIdentifier
+            credentialRawDao.getByCredentialId(1).first().keyIdentifier,
+            "Before updating credentialRaw has original value"
         )
 
         credentialRawDao.insert(credentialRaw1.copy(keyIdentifier = "updated"))
 
         assertEquals(
-            "Inserting updated credentialRaw should replace original",
             "updated",
-            credentialRawDao.getByCredentialId(1).first().keyIdentifier
+            credentialRawDao.getByCredentialId(1).first().keyIdentifier,
+            "Inserting updated credentialRaw should replace original"
         )
     }
 
@@ -85,17 +81,17 @@ class CredentialRawDaoTest {
         credentialRawDao.insert(credentialRaw2)
 
         assertTrue(
-            "CredentialRaw with id1 should be retrievable",
-            credentialRawDao.getByCredentialId(credentialId = credential1.id).contains(credentialRaw1)
+            credentialRawDao.getByCredentialId(credentialId = credential1.id).contains(credentialRaw1),
+            "CredentialRaw with id1 should be retrievable"
         )
         credentialDao.deleteById(credential1.id)
         assertTrue(
-            "CredentialRaw with foreign key for credential 1 should be deleted",
-            credentialRawDao.getByCredentialId(credentialId = credential1.id).isEmpty()
+            credentialRawDao.getByCredentialId(credentialId = credential1.id).isEmpty(),
+            "CredentialRaw with foreign key for credential 1 should be deleted"
         )
         assertTrue(
-            "CredentialRaw with foreign key for credential 2 should not be deleted",
-            credentialRawDao.getByCredentialId(credentialId = credential2.id).contains(credentialRaw2)
+            credentialRawDao.getByCredentialId(credentialId = credential2.id).contains(credentialRaw2),
+            "CredentialRaw with foreign key for credential 2 should not be deleted"
         )
     }
 }

@@ -27,10 +27,10 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import java.net.URL
 import ch.admin.foitt.openid4vc.domain.model.presentationRequest.PresentationRequestError as OpenIdPresentationRequestError
 
@@ -57,7 +57,7 @@ class SubmitPresentationTest {
 
     private lateinit var submitPresentationUseCase: SubmitPresentation
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -93,7 +93,7 @@ class SubmitPresentationTest {
         coEvery { mockSendPresentation(any(), any()) } returns Ok(Unit)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -144,7 +144,7 @@ class SubmitPresentationTest {
     }
 
     @Test
-    @Ignore(
+    @Disabled(
         "Should be taken into account when the issuers/verifiers actually provide/ask for various algorithms"
     )
     fun `submitting a presentation where the required algorithm do not match the one from the credential should fail`() = runTest(

@@ -30,9 +30,9 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.just
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class ChangePassphraseTest {
 
@@ -66,7 +66,7 @@ class ChangePassphraseTest {
 
     private lateinit var changePassphrase: ChangePassphrase
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -92,7 +92,7 @@ class ChangePassphraseTest {
         coEvery { mockSavePassphraseWasDeleted.invoke(any()) } just Runs
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

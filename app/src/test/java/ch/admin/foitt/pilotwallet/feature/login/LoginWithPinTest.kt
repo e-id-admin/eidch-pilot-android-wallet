@@ -11,21 +11,24 @@ import ch.admin.foitt.pilotwallet.platform.passphraseHashing.domain.usecase.Hash
 import ch.admin.foitt.pilotwallet.platform.passphrasePeppering.domain.model.PepperPassphraseError
 import ch.admin.foitt.pilotwallet.platform.passphrasePeppering.domain.model.PepperedData
 import ch.admin.foitt.pilotwallet.platform.passphrasePeppering.domain.usecase.PepperPassphrase
+import ch.admin.foitt.pilotwallet.platform.userInteraction.domain.usecase.UserInteraction
 import ch.admin.foitt.pilotwallet.util.assertErrorType
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import io.mockk.MockKAnnotations
 import io.mockk.Ordering
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class LoginWithPinTest {
     @MockK
@@ -37,27 +40,32 @@ class LoginWithPinTest {
     @MockK
     private lateinit var mockHashPassphrase: HashPassphrase
 
+    @MockK
+    private lateinit var mockUserInteraction: UserInteraction
+
     private lateinit var useCase: LoginWithPinImpl
 
     private val hashedData = HashedData(byteArrayOf(0, 1), byteArrayOf(1, 0))
     private val pepperedData = PepperedData(byteArrayOf(0, 0), byteArrayOf(1, 1))
 
-    @Before
+    @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
 
         coEvery { mockOpenAppDatabase(any()) } returns Ok(Unit)
         coEvery { mockHashPassphrase(any(), any()) } returns Ok(hashedData)
         coEvery { mockPepperPassphrase(any(), any()) } returns Ok(pepperedData)
+        coEvery { mockUserInteraction() } just Runs
 
         useCase = LoginWithPinImpl(
             hashPassphrase = mockHashPassphrase,
             openAppDatabase = mockOpenAppDatabase,
             pepperPassphrase = mockPepperPassphrase,
+            userInteraction = mockUserInteraction,
         )
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -67,7 +75,7 @@ class LoginWithPinTest {
     fun `A Successful CheckPin call specific steps`() = runTest {
         val result = useCase("x")
 
-        Assert.assertNotNull(result.get())
+        assertNotNull(result.get())
         coVerify(ordering = Ordering.ORDERED) {
             mockHashPassphrase.invoke(any(), any())
             mockPepperPassphrase.invoke(any(), any())

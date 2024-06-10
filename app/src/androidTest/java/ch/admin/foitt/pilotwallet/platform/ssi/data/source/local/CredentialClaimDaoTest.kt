@@ -3,36 +3,31 @@ package ch.admin.foitt.pilotwallet.platform.ssi.data.source.local
 import android.database.sqlite.SQLiteConstraintException
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SmallTest
 import ch.admin.foitt.pilotwallet.platform.database.data.dao.CredentialClaimDao
 import ch.admin.foitt.pilotwallet.platform.database.data.dao.CredentialDao
 import ch.admin.foitt.pilotwallet.platform.database.domain.AppDatabase
 import ch.admin.foitt.pilotwallet.platform.database.domain.model.CredentialClaim
+import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.KEY
+import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.VALUE
 import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.credential1
 import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.credential2
-import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.key
-import ch.admin.foitt.pilotwallet.platform.ssi.data.source.local.mock.CredentialTestData.value
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
-@RunWith(AndroidJUnit4::class)
-@SmallTest
 class CredentialClaimDaoTest {
 
     private lateinit var database: AppDatabase
     private lateinit var credentialDao: CredentialDao
     private lateinit var credentialClaimDao: CredentialClaimDao
 
-    @Before
+    @BeforeEach
     fun setupDatabase() {
         database = Room.inMemoryDatabaseBuilder(
-            ApplicationProvider.getApplicationContext(),
-            AppDatabase::class.java
+            ApplicationProvider.getApplicationContext(), AppDatabase::class.java
         ).allowMainThreadQueries().build()
 
         credentialDao = database.credentialDao()
@@ -41,7 +36,7 @@ class CredentialClaimDaoTest {
         credentialClaimDao = database.credentialClaimDao()
     }
 
-    @After
+    @AfterEach
     fun closeDatabase() {
         database.close()
     }
@@ -54,7 +49,7 @@ class CredentialClaimDaoTest {
         )
 
         val credentialClaim =
-            CredentialClaim(id = 1, credentialId = credential1.id, key = key, value = value, valueType = null)
+            CredentialClaim(id = 1, credentialId = credential1.id, key = KEY, value = VALUE, valueType = null)
         val id = credentialClaimDao.insert(credentialClaim)
 
         assertEquals(
@@ -69,11 +64,12 @@ class CredentialClaimDaoTest {
         )
     }
 
-    @Test(expected = SQLiteConstraintException::class)
+    @Test
     fun insertWithoutMatchingForeignKeyShouldThrow() {
-        val credentialClaim =
-            CredentialClaim(id = 1, credentialId = -1, key = key, value = value, valueType = null)
-        credentialClaimDao.insert(credentialClaim)
+        assertThrows<SQLiteConstraintException> {
+            val credentialClaim = CredentialClaim(id = 1, credentialId = -1, key = KEY, value = VALUE, valueType = null)
+            credentialClaimDao.insert(credentialClaim)
+        }
     }
 
     @Test
@@ -81,8 +77,8 @@ class CredentialClaimDaoTest {
         val credentialClaim1 = CredentialClaim(
             id = 1,
             credentialId = credential1.id,
-            key = key,
-            value = value,
+            key = KEY,
+            value = VALUE,
             valueType = null
         )
         val id1 = credentialClaimDao.insert(credentialClaim1)
@@ -90,27 +86,27 @@ class CredentialClaimDaoTest {
         val credentialClaim2 = CredentialClaim(
             id = 2,
             credentialId = credential2.id,
-            key = key,
-            value = value,
+            key = KEY,
+            value = VALUE,
             valueType = null
         )
         val id2 = credentialClaimDao.insert(credentialClaim2)
 
         assertEquals(
-            "CredentialClaim with id1 should be retrievable",
             listOf(credentialClaim1.copy(id = id1)),
-            credentialClaimDao.getByCredentialId(credentialId = credential1.id)
+            credentialClaimDao.getByCredentialId(credentialId = credential1.id),
+            "CredentialClaim with id1 should be retrievable"
         )
         credentialDao.deleteById(credential1.id)
         assertEquals(
-            "CredentialClaim with foreign key for credential 1 should be deleted",
             emptyList<CredentialClaim>(),
-            credentialClaimDao.getByCredentialId(credentialId = credential1.id)
+            credentialClaimDao.getByCredentialId(credentialId = credential1.id),
+            "CredentialClaim with foreign key for credential 1 should be deleted"
         )
         assertEquals(
-            "CredentialClaim with foreign key for credential 2 should not be deleted",
             listOf(credentialClaim2.copy(id = id2)),
-            credentialClaimDao.getByCredentialId(credentialId = credential2.id)
+            credentialClaimDao.getByCredentialId(credentialId = credential2.id),
+            "CredentialClaim with foreign key for credential 2 should not be deleted"
         )
     }
 }

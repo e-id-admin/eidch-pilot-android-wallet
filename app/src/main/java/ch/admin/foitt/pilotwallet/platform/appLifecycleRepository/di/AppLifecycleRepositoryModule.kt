@@ -2,6 +2,8 @@ package ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.di
 
 import ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.data.repository.AppLifecycleRepositoryImpl
 import ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.domain.repository.AppLifecycleRepository
+import ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.domain.usecase.GetAppLifecycleState
+import ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.domain.usecase.implementation.GetAppLifecycleStateImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,4 +19,9 @@ interface AppLifecycleRepositoryModule {
     fun bindAppLifecycleRepository(
         provider: AppLifecycleRepositoryImpl
     ): AppLifecycleRepository
+
+    @Binds
+    fun bindGetAppLifecycleState(
+        useCase: GetAppLifecycleStateImpl
+    ): GetAppLifecycleState
 }

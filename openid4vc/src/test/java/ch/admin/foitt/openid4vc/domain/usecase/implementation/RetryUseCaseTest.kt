@@ -15,16 +15,16 @@ import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class RetryUseCaseTest {
 
     @MockK
     private lateinit var createDidJwk: CreateDidJwk
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -51,16 +51,11 @@ class RetryUseCaseTest {
         coEvery {
             createDidJwk(any(), any())
         } returnsMany listOf(
-            errorResult,
-            errorResult,
-            Ok("")
+            errorResult, errorResult, Ok("")
         )
 
         retryUseCase {
-            createDidJwk(
-                supportedCredential = supportedCredential,
-                keyPair = VALID_KEY_PAIR
-            )
+            createDidJwk(supportedCredential = supportedCredential, keyPair = VALID_KEY_PAIR)
         }.assertOk()
 
         coVerify(exactly = 3) {
@@ -84,7 +79,7 @@ class RetryUseCaseTest {
         }
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

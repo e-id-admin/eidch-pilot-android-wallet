@@ -4,30 +4,22 @@ import ch.admin.foitt.pilotwallet.platform.biometrics.domain.usecase.ResetBiomet
 import ch.admin.foitt.pilotwallet.platform.login.domain.model.CanUseBiometricsForLoginResult
 import ch.admin.foitt.pilotwallet.platform.login.domain.usecase.CanUseBiometricsForLogin
 import ch.admin.foitt.pilotwallet.platform.login.domain.usecase.NavigateToLogin
-import ch.admin.foitt.pilotwallet.platform.navigation.NavigationManager
-import ch.admin.foitt.pilotwallet.platform.navigation.domain.model.NavigationAction
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.BiometricLoginScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.PinLoginScreenDestination
+import com.ramcosta.composedestinations.spec.Direction
 import javax.inject.Inject
 
 class NavigateToLoginImpl @Inject constructor(
-    private val navManager: NavigationManager,
     private val canUseBiometricsForLogin: CanUseBiometricsForLogin,
     private val resetBiometrics: ResetBiometrics,
 ) : NavigateToLogin {
-    override suspend fun invoke(): NavigationAction {
+    override suspend fun invoke(): Direction {
         return when (canUseBiometricsForLogin()) {
-            CanUseBiometricsForLoginResult.Usable -> NavigationAction {
-                navManager.navigateToAndClearCurrent(BiometricLoginScreenDestination)
-            }
-            CanUseBiometricsForLoginResult.NotSetUpInApp -> NavigationAction {
-                navManager.navigateToAndClearCurrent(PinLoginScreenDestination)
-            }
+            CanUseBiometricsForLoginResult.Usable -> BiometricLoginScreenDestination
+            CanUseBiometricsForLoginResult.NotSetUpInApp -> PinLoginScreenDestination
             else -> {
                 resetBiometrics()
-                NavigationAction {
-                    navManager.navigateToAndClearCurrent(PinLoginScreenDestination)
-                }
+                PinLoginScreenDestination
             }
         }
     }

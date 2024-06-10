@@ -8,10 +8,12 @@ import io.mockk.MockKAnnotations
 import io.mockk.impl.annotations.SpyK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class CheckQrScanPermissionTest {
 
@@ -20,7 +22,7 @@ class CheckQrScanPermissionTest {
 
     private lateinit var checkQrScanPermissionUseCase: CheckQrScanPermission
 
-    @Before
+    @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
 
@@ -29,7 +31,7 @@ class CheckQrScanPermissionTest {
         )
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -42,8 +44,8 @@ class CheckQrScanPermissionTest {
             promptWasTriggered = false,
         )
 
-        Assert.assertFalse(inMemoryCameraIntroRepository.value)
-        Assert.assertEquals(PermissionState.Intro, result)
+        assertFalse(inMemoryCameraIntroRepository.value)
+        assertEquals(PermissionState.Intro, result)
     }
 
     @Test
@@ -54,8 +56,8 @@ class CheckQrScanPermissionTest {
             rationaleShouldBeShown = false,
             promptWasTriggered = false,
         )
-        Assert.assertTrue(inMemoryCameraIntroRepository.value)
-        Assert.assertEquals(PermissionState.Blocked, result)
+        assertTrue(inMemoryCameraIntroRepository.value)
+        assertEquals(PermissionState.Blocked, result)
     }
 
     @Test
@@ -65,7 +67,7 @@ class CheckQrScanPermissionTest {
             rationaleShouldBeShown = false,
             promptWasTriggered = true,
         )
-        Assert.assertTrue(inMemoryCameraIntroRepository.value)
-        Assert.assertEquals(PermissionState.Blocked, result)
+        assertTrue(inMemoryCameraIntroRepository.value)
+        assertEquals(PermissionState.Blocked, result)
     }
 }

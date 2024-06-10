@@ -30,10 +30,10 @@ import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class FetchVerifiableCredentialImplTest {
 
@@ -54,7 +54,7 @@ class FetchVerifiableCredentialImplTest {
 
     private lateinit var fetchCredentialUseCase: FetchVerifiableCredentialImpl
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -69,7 +69,7 @@ class FetchVerifiableCredentialImplTest {
         )
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

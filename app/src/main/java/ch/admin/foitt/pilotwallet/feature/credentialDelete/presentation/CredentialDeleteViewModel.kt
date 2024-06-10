@@ -7,7 +7,7 @@ import ch.admin.foitt.pilotwallet.platform.scaffold.domain.model.TopBarState
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.usecase.SetTopBarState
 import ch.admin.foitt.pilotwallet.platform.scaffold.presentation.ScreenViewModel
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.DeleteCredential
-import ch.admin.foitt.pilotwalletcomposedestinations.destinations.CredentialDetailScreenDestination
+import ch.admin.foitt.pilotwalletcomposedestinations.destinations.RecentCredentialActivitiesScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,12 +21,12 @@ class CredentialDeleteViewModel @Inject constructor(
 ) : ScreenViewModel(setTopBarState) {
     override val topBarState = TopBarState.None
 
-    private val navArgs = CredentialDetailScreenDestination.argsFrom(savedStateHandle)
+    private val navArgs = RecentCredentialActivitiesScreenDestination.argsFrom(savedStateHandle)
 
     fun onDelete() {
         viewModelScope.launch {
             deleteCredential(credentialId = navArgs.credentialId)
-            navManager.popBackStackTo(CredentialDetailScreenDestination, true)
+            navManager.popBackStackTo(RecentCredentialActivitiesScreenDestination, true)
         }
     }
 

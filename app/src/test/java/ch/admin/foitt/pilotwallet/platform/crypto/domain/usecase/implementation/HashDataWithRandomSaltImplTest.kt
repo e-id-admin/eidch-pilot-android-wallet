@@ -5,24 +5,17 @@ import ch.admin.foitt.pilotwallet.util.assertErr
 import com.github.michaelbull.result.getOrThrow
 import io.mockk.every
 import io.mockk.spyk
-import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Test
 
 internal class HashDataWithRandomSaltImplTest {
 
     private val testDispatcher = StandardTestDispatcher()
-
-    @After
-    fun afterTests() {
-        unmockkAll()
-    }
 
     @Test
     fun `hashing with random salt should use default hash configuration`() = runTest(testDispatcher) {

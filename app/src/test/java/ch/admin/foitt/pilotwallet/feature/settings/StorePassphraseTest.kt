@@ -23,10 +23,11 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import javax.crypto.Cipher
 
 class StorePassphraseTest {
@@ -50,7 +51,7 @@ class StorePassphraseTest {
 
     private lateinit var storePassphrase: StorePassphrase
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -70,8 +71,8 @@ class StorePassphraseTest {
     @Test
     fun `Saving the passphrase should follow specific steps`() = runTest(testDispatcher) {
         val result = storePassphrase(pin = "123456", mockCipher)
-        Assert.assertNotNull(result.get())
-        Assert.assertNull(result.getError())
+        assertNotNull(result.get())
+        assertNull(result.getError())
 
         coVerifyOrder {
             mockHashPassphrase.invoke(any(), any())
@@ -87,8 +88,8 @@ class StorePassphraseTest {
         coEvery { mockHashPassphrase.invoke(any(), any()) } returns Err(exception)
 
         val result = storePassphrase(pin = "123456", mockCipher)
-        Assert.assertNull(result.get())
-        Assert.assertNotNull(result.getError())
+        assertNull(result.get())
+        assertNotNull(result.getError())
 
         coVerify(exactly = 0) {
             mockPepperPassphrase.invoke(any(), any())
@@ -102,8 +103,8 @@ class StorePassphraseTest {
         coEvery { mockPepperPassphrase.invoke(any(), any()) } returns Err(exception)
 
         val result = storePassphrase(pin = "123456", mockCipher)
-        Assert.assertNull(result.get())
-        Assert.assertNotNull(result.getError())
+        assertNull(result.get())
+        assertNotNull(result.getError())
 
         coVerify(exactly = 0) {
             mockEncryptAndSavePassphrase.invoke(any(), any())
@@ -118,8 +119,8 @@ class StorePassphraseTest {
         coEvery { mockEncryptAndSavePassphrase.invoke(any(), any()) } returns Err(encryptError)
 
         val result = storePassphrase(pin = "pin", mockCipher)
-        Assert.assertNull(result.get())
-        Assert.assertNotNull(result.getError())
+        assertNull(result.get())
+        assertNotNull(result.getError())
 
         coVerifyOrder {
             mockHashPassphrase.invoke(any(), any())
@@ -128,7 +129,7 @@ class StorePassphraseTest {
         }
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

@@ -13,10 +13,10 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class FetchIssuerConfigurationImplTest {
 
@@ -25,7 +25,7 @@ class FetchIssuerConfigurationImplTest {
 
     private lateinit var fetchIssuerConfigurationUseCase: FetchIssuerConfiguration
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -36,7 +36,7 @@ class FetchIssuerConfigurationImplTest {
         )
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -55,10 +55,7 @@ class FetchIssuerConfigurationImplTest {
         coEvery { mockCredentialOfferRepository.fetchIssuerConfiguration(any()) } returns expected
 
         val issuerConfig = fetchIssuerConfigurationUseCase("")
-        assertEquals(
-            expected,
-            issuerConfig
-        )
+        assertEquals(expected, issuerConfig)
     }
 
     private fun success() {

@@ -11,8 +11,9 @@ internal class GetLocalizedDateTimeImpl @Inject constructor(
     private val getCurrentAppLocale: GetCurrentAppLocale,
 ) : GetLocalizedDateTime {
     override fun invoke(dateTime: ZonedDateTime): String {
-        val date = dateTime.asDayMonthYear(getCurrentAppLocale())
-        val time = dateTime.asHourMinutes(getCurrentAppLocale())
+        val currentLocale = getCurrentAppLocale()
+        val date = dateTime.asDayMonthYear(currentLocale)
+        val time = dateTime.asHourMinutes(currentLocale)
         return "$date | $time"
     }
 }

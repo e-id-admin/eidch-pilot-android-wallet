@@ -33,9 +33,9 @@ import io.mockk.just
 import io.mockk.runs
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class HandleDeeplinkTest {
     @MockK
@@ -49,7 +49,7 @@ class HandleDeeplinkTest {
 
     private lateinit var handleDeeplinkUseCase: HandleDeeplink
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -67,7 +67,7 @@ class HandleDeeplinkTest {
         )
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

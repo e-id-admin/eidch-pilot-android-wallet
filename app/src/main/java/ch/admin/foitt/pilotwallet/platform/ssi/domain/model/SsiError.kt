@@ -3,6 +3,7 @@
 package ch.admin.foitt.pilotwallet.platform.ssi.domain.model
 
 import ch.admin.foitt.pilotwallet.platform.sdjwt.domain.model.ParseSdJwtError
+import timber.log.Timber
 
 interface SsiError {
     data class Unexpected(val cause: Throwable?) :
@@ -21,7 +22,8 @@ interface SsiError {
         DeleteCredentialError,
         GetCredentialClaimsError,
         GetCredentialClaimDisplayError,
-        GetCredentialClaimDataError
+        GetCredentialClaimDataError,
+        MapToCredentialClaimDataError
 }
 
 sealed interface CredentialClaimDisplayRepositoryError
@@ -40,6 +42,7 @@ sealed interface DeleteCredentialError
 sealed interface GetCredentialClaimsError
 sealed interface GetCredentialClaimDisplayError
 sealed interface GetCredentialClaimDataError
+sealed interface MapToCredentialClaimDataError
 
 internal fun CredentialRawRepositoryError.toGetAllCredentialBodiesError() = when (this) {
     is SsiError.Unexpected -> SsiError.Unexpected(cause)
@@ -91,4 +94,13 @@ internal fun GetCredentialClaimsError.toGetCredentialClaimDataError() = when (th
 
 internal fun GetCredentialClaimDisplayError.toGetCredentialClaimDataError() = when (this) {
     is SsiError.Unexpected -> SsiError.Unexpected(cause)
+}
+
+internal fun MapToCredentialClaimDataError.toGetCredentialClaimDataError() = when (this) {
+    is SsiError.Unexpected -> this
+}
+
+internal fun Throwable.toMapToCredentialClaimDataError(): MapToCredentialClaimDataError {
+    Timber.e(this)
+    return SsiError.Unexpected(this)
 }

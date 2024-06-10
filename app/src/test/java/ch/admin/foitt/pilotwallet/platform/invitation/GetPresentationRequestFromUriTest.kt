@@ -18,10 +18,10 @@ import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.net.URI
 
 class GetPresentationRequestFromUriTest {
@@ -46,7 +46,7 @@ class GetPresentationRequestFromUriTest {
 
     private lateinit var getPresentationRequestFromUri: GetPresentationRequestFromUri
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -57,7 +57,7 @@ class GetPresentationRequestFromUriTest {
         coEvery { mockFetchPresentationRequest.invoke(url = any()) } returns Ok(emptyPresentationRequest)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -72,7 +72,7 @@ class GetPresentationRequestFromUriTest {
             mockFetchPresentationRequest.invoke(url = any())
         }
 
-        Assert.assertTrue(useCaseResult.get() is PresentationRequest)
+        assertTrue(useCaseResult.get() is PresentationRequest)
     }
 
     @Test
@@ -87,7 +87,7 @@ class GetPresentationRequestFromUriTest {
             mockFetchPresentationRequest.invoke(url = any())
         }
 
-        Assert.assertTrue(useCaseResult.getError() is InvitationError.NetworkError)
+        assertTrue(useCaseResult.getError() is InvitationError.NetworkError)
     }
 
     @Test
@@ -104,7 +104,7 @@ class GetPresentationRequestFromUriTest {
             mockFetchPresentationRequest.invoke(url = any())
         }
 
-        Assert.assertTrue(useCaseResult.getError() is InvitationError.InvalidPresentationRequest)
+        assertTrue(useCaseResult.getError() is InvitationError.InvalidPresentationRequest)
     }
 
     @Test
@@ -117,6 +117,6 @@ class GetPresentationRequestFromUriTest {
             mockFetchPresentationRequest.invoke(url = any())
         }
 
-        Assert.assertTrue(useCaseResult.getError() is InvitationError.InvalidUri)
+        assertTrue(useCaseResult.getError() is InvitationError.InvalidUri)
     }
 }

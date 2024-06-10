@@ -1,7 +1,9 @@
 package ch.admin.foitt.pilotwallet.platform.database.di
 
-import ch.admin.foitt.pilotwallet.platform.database.data.repository.DatabaseStateRepositoryImpl
-import ch.admin.foitt.pilotwallet.platform.database.domain.repository.DatabaseStateRepository
+import ch.admin.foitt.pilotwallet.platform.database.data.repository.DatabaseRepositoryImpl
+import ch.admin.foitt.pilotwallet.platform.database.data.repository.SetupSqlCipherDatabaseRepository
+import ch.admin.foitt.pilotwallet.platform.database.domain.repository.DatabaseRepository
+import ch.admin.foitt.pilotwallet.platform.database.domain.repository.SetupDatabaseRepository
 import ch.admin.foitt.pilotwallet.platform.database.domain.usecase.ChangeDatabasePassphrase
 import ch.admin.foitt.pilotwallet.platform.database.domain.usecase.CheckDatabasePassphrase
 import ch.admin.foitt.pilotwallet.platform.database.domain.usecase.CloseAppDatabase
@@ -19,10 +21,19 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class DatabaseModule
+interface DatabaseModule {
+    @Singleton
+    @Binds
+    fun bindDatabaseRepository(repository: DatabaseRepositoryImpl): DatabaseRepository
+
+    @Singleton
+    @Binds
+    fun bindSetupDatabaseRepository(repository: SetupSqlCipherDatabaseRepository): SetupDatabaseRepository
+}
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
@@ -44,9 +55,4 @@ interface DatabaseBindModule {
 
     @Binds
     fun bindIsAppDatabaseOpen(useCase: IsAppDatabaseOpenImpl): IsAppDatabaseOpen
-
-    @Binds
-    fun bindDatabaseStateRepository(
-        repo: DatabaseStateRepositoryImpl
-    ): DatabaseStateRepository
 }

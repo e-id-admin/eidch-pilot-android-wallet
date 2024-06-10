@@ -7,10 +7,14 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import ch.admin.foitt.pilotwallet.app.presentation.MainScreen
+import ch.admin.foitt.pilotwallet.platform.userInteraction.domain.usecase.UserInteraction
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    @Inject lateinit var userInteraction: UserInteraction
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         val timeStamp = SystemClock.elapsedRealtime()
@@ -24,6 +28,11 @@ class MainActivity : AppCompatActivity() {
         setContent {
             MainScreen(this)
         }
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        userInteraction()
     }
 
     companion object {

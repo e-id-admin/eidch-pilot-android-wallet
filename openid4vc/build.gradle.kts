@@ -1,6 +1,7 @@
 plugins {
     id("android-sdk")
     alias(libs.plugins.devtools.ksp)
+    alias(libs.plugins.junit5)
 }
 
 android {
@@ -37,9 +38,10 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.slf4j.nop)
     testImplementation(libs.archunit)
-    testImplementation(libs.junit)
     testImplementation(libs.mockk)
 
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+    // for "Parameterized Tests"
+    testImplementation(libs.junit.jupiter.params)
 }

@@ -71,6 +71,36 @@ internal class PresentationRequestRepositoryImpl @Inject constructor(
             }
         )
     }.mapError(Throwable::toSubmitPresentationErrorError)
+
+    private suspend fun handleClientRequestException(clientRequestException: ClientRequestException): SendPresentationError =
+        when (clientRequestException.response.status) {
+            HttpStatusCode.BadRequest -> parseError(clientRequestException)
+            else -> PresentationRequestError.Unexpected(clientRequestException)
+        }
+
+    private suspend fun parseError(clientRequestException: ClientRequestException): SendPresentationError =
+        try {
+            val errorBodyString = clientRequestException.response.bodyAsText()
+            val errorBody = Json.decodeFromString<HttpErrorBody>(errorBodyString)
+            when {
+                errorBody.isValidationError() -> PresentationRequestError.ValidationError
+                else -> PresentationRequestError.Unexpected(clientRequestException)
+            }
+        } catch (e: Exception) {
+            PresentationRequestError.Unexpected(e)
+        }
+
+    private fun HttpErrorBody.isValidationError() = this.error in ERRORS
+
+    companion object {
+        private val ERRORS = listOf(
+            "authorization_request_object_not_found",
+            "authorization_request_missing_error_param",
+            "verification_process_closed",
+            "invalid_presentation_definition",
+            "invalid_request",
+        )
+    }
 }
 
 private fun Throwable.toFetchPresentationRequestError(): FetchPresentationRequestError = when (this) {
@@ -85,27 +115,6 @@ private fun Throwable.toSubmitPresentationError(): SendPresentationError =
         is IOException -> PresentationRequestError.NetworkError
         else -> PresentationRequestError.Unexpected(this)
     }
-
-private suspend fun handleClientRequestException(clientRequestException: ClientRequestException): SendPresentationError =
-    when (clientRequestException.response.status) {
-        HttpStatusCode.BadRequest -> parseError(clientRequestException)
-        else -> PresentationRequestError.Unexpected(clientRequestException)
-    }
-
-private suspend fun parseError(clientRequestException: ClientRequestException): SendPresentationError =
-    try {
-        val errorBodyString = clientRequestException.response.bodyAsText()
-        val errorBody = Json.decodeFromString<HttpErrorBody>(errorBodyString)
-        when {
-            errorBody.isValidationError() -> PresentationRequestError.ValidationError
-            else -> PresentationRequestError.Unexpected(clientRequestException)
-        }
-    } catch (e: Exception) {
-        PresentationRequestError.Unexpected(e)
-    }
-
-private fun HttpErrorBody.isValidationError(): Boolean =
-    error == "invalid_request" && (errorCode == "credential_revoked" || errorCode == "credential_suspended")
 
 private fun Throwable.toSubmitPresentationErrorError(): SubmitPresentationErrorError = when (this) {
     is SSLHandshakeException -> PresentationRequestError.CertificateNotPinnedError

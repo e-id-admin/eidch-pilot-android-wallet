@@ -18,10 +18,10 @@ import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class GenerateKeyPairImplTest {
 
@@ -30,7 +30,7 @@ class GenerateKeyPairImplTest {
 
     private lateinit var generateKeyPair: GenerateKeyPair
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -52,10 +52,7 @@ class GenerateKeyPairImplTest {
     fun `use first cryptographic suite when multiple are available`() = runTest {
         val result = generateKeyPair(supportedCredentialWithMultipleCryptographicSuites).assertOk()
 
-        assertEquals(
-            SUPPORTED_CRYPTOGRAPHIC_SUITE,
-            result.jwsAlgorithm.name
-        )
+        assertEquals(SUPPORTED_CRYPTOGRAPHIC_SUITE, result.jwsAlgorithm.name)
 
         coVerify(exactly = 1) {
             mockCreateES512KeyPair(any(), any())
@@ -84,7 +81,7 @@ class GenerateKeyPairImplTest {
         }
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

@@ -124,6 +124,8 @@ Bitte wenden Sie sich ans Strassenverkehrsamt Ausserrhoden.</string>
   <string name="home_empty_view_no_credentials_qr_code_text">Ich habe keine SMS oder QR-Code erhalten.</string>
   <string name="home_empty_view_no_credentials_scan_link">https://forms.eid.admin.ch/elfa</string>
   <string name="home_empty_view_had_credentials_text">Ihre Wallet ist leer. Bitte wenden Sie sich an das Strassenverkehrsamt Appenzell Ausserrhoden.</string>
+  <string name="home_last_activity_header_text">LETZTE AKTIVITÄT</string>
+  <string name="home_last_activity_header_button">Alle anzeigen</string>
   <string name="credential_status_valid">Gültig</string>
   <string name="credential_status_invalid">Ungültig</string>
   <string name="credential_status_unknown">Unbekannt</string>
@@ -161,6 +163,7 @@ Bitte wenden Sie sich ans Strassenverkehrsamt Ausserrhoden.</string>
   <string name="settings_contactLink">https://forms.eid.admin.ch/elfa</string>
   <string name="settings_impressum">Impressum</string>
   <string name="settings_licences">Lizenzen</string>
+  <string name="settings_getVerified">Wie kann ich kontrolliert werden?</string>
   <string name="securitySettings_title">Datenschutz &amp; Sicherheit</string>
   <string name="securitySettings_loginTitle">Sicherheit</string>
   <string name="securitySettings_changePin">Code ändern</string>
@@ -197,11 +200,13 @@ Bitte wenden Sie sich ans Strassenverkehrsamt Ausserrhoden.</string>
   <string name="impressum_legals_link">https://www.eid.admin.ch/de/pilotwallet-privacy</string>
   <string name="impressum_disclaimer_title">Haftungsausschluss</string>
   <string name="impressum_disclaimer_text">Die Autorenschaft übernimmt keinerlei Gewähr hinsichtlich der Zuverlässigkeit und Vollständigkeit der Informationen. Verweise und Links auf Webseiten Dritter liegen ausserhalb unseres Verantwortungsbereichs.</string>
-  <string name="credential_navigation_title">Nachweis</string>
-  <string name="credential_detail_navigation_title">Nachweisinfo</string>
-  <string name="credential_menu_details_text">Nachweisinfo</string>
+  <string name="credential_detail_navigation_title">Inhalt Nachweis</string>
+  <string name="credential_menu_details_text">Inhalt Nachweis</string>
   <string name="credential_menu_police_control_text">Polizeikontrolle</string>
   <string name="credential_menu_delete_text">Nachweis entfernen</string>
+  <string name="credential_menu_activities_text">Aktivitäten</string>
+  <string name="credential_activities_header_text">Letzte Aktivitäten</string>
+  <string name="credential_activities_footer_text">Restliche Aktivitäten</string>
   <string name="credential_delete_title">Nachweis endgültig entfernen</string>
   <string name="credential_delete_text">Wollen Sie den ausgewählten Nachweis wirklich entfernen? Ein erneutes Hinzufügen dieses Nachweises ist danach aus Sicherheitsgründen nicht mehr möglich.\n\nIn dem Fall muss ein neuer Nachweis beim Strassenverkehrsamt bestellt werden.\n\nBeachten Sie, dass dabei alle Daten aus der pilotWallet gelöscht werden.</string>
   <string name="credential_delete_confirm_button">Nachweis entfernen</string>
@@ -223,4 +228,18 @@ Bitte wenden Sie sich ans Strassenverkehrsamt Ausserrhoden.</string>
   <string name="change_biometrics_activate_button">Los</string>
   <string name="biometrics_lockout_title">Biometrics gesperrt</string>
   <string name="biometrics_lockout_text">Die Verwendung biometrischer Daten ist vorübergehend gesperrt. Sie können versuchen, sie zu einem späteren Zeitpunkt zu aktivieren</string>
+  <string name="activities_title">Aktivitäten</string>
+  <string name="activities_item_subtitle_credentialReceived">Nachweis empfangen</string>
+  <string name="activities_item_subtitle_presentationAccepted">Nachweis präsentiert</string>
+  <string name="activities_item_subtitle_presentationDeclined">Nachweis nicht präsentiert</string>
+  <string name="activities_empty_state_text">Zurzeit sind keine Aktivitäten vorhanden</string>
+  <string name="activities_item_delete_button">Löschen</string>
+  <string name="activities_empty_state_title">Leere Aktivitäten</string>
+  <string name="activity_details_claims_title">Angefragte Daten</string>
+  <string name="activity_details_verifier">Überprüfer</string>
+  <string name="activity_details_menu_delete_text">Löschen</string>
+  <string name="get_verified_title">Verifizieren</string>
+  <string name="get_verified_text">Ihr elektronischer Lernfahrausweis kann über den LicenceCheck, einer Webapplikation, von Ihrer Fahrbegleitung (Fahrlehrer/innen oder Familie und Freunde) kontrolliert und geprüft werden.</string>
+  <string name="get_verified_link_text">Zum LicenceCheck</string>
+  <string name="get_verified_link">https://licencecheck.astra.admin.ch</string>
 </resources>

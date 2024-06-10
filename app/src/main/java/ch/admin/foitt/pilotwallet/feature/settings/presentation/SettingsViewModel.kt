@@ -7,6 +7,7 @@ import ch.admin.foitt.pilotwallet.platform.scaffold.domain.model.TopBarState
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.usecase.SetTopBarState
 import ch.admin.foitt.pilotwallet.platform.scaffold.presentation.ScreenViewModel
 import ch.admin.foitt.pilotwallet.platform.utils.openLink
+import ch.admin.foitt.pilotwalletcomposedestinations.destinations.GetVerifiedScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.ImpressumScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.LicencesScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.SecuritySettingsScreenDestination
@@ -24,6 +25,8 @@ class SettingsViewModel @Inject constructor(
     override val topBarState = TopBarState.Details(navManager::navigateUp, R.string.settings_title)
 
     fun onSecurityScreen() = navManager.navigateTo(SecuritySettingsScreenDestination)
+
+    fun onGetVerified() = navManager.navigateTo(GetVerifiedScreenDestination)
 
     fun onFeedback() = appContext.openLink(R.string.settings_feedbackLink)
 

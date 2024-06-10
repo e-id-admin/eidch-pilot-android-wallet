@@ -5,69 +5,50 @@ import ch.admin.foitt.pilotwallet.feature.qrscan.domain.usecase.CheckQrScanPermi
 import ch.admin.foitt.pilotwallet.feature.qrscan.domain.usecase.implementation.CheckQrScanPermissionImpl
 import ch.admin.foitt.pilotwallet.feature.qrscan.mock.InMemoryCameraIntroRepository
 import ch.admin.foitt.pilotwallet.util.getFlagLists
-import io.mockk.MockKAnnotations
 import io.mockk.impl.annotations.SpyK
-import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DynamicTest
+import org.junit.jupiter.api.TestFactory
 
-@RunWith(value = Parameterized::class)
-internal class CheckQrScanPermissionTestPermissionGranted(
-    private val currentPermissionsState: PermissionsState,
-) {
-    companion object {
-        @JvmStatic
-        private val permissionGranted = PermissionsState(
-            resultPermissionGranted = true,
-            permissionWasTriggeredOnce = false,
-            resultRationaleShouldBeShown = false,
-            resultPromptWasTriggered = false,
-        )
-
-        @JvmStatic
-        @Parameterized.Parameters(name = "{0}")
-        fun permissionsStates(): List<PermissionsState> = getFlagLists(0, 7)
-            .map { flags ->
-                permissionGranted.copy(
-                    permissionWasTriggeredOnce = flags.getOrElse(0) { false },
-                    resultRationaleShouldBeShown = flags.getOrElse(1) { false },
-                    resultPromptWasTriggered = flags.getOrElse(2) { false },
-                )
-            }
-    }
-
+internal class CheckQrScanPermissionTestPermissionGranted {
     @SpyK
     private var inMemoryCameraIntroRepository = InMemoryCameraIntroRepository()
 
     private lateinit var checkQrScanPermissionUseCase: CheckQrScanPermission
 
-    @Before
+    @BeforeEach
     fun setup() {
-        MockKAnnotations.init(this)
-
         checkQrScanPermissionUseCase = CheckQrScanPermissionImpl(
             cameraIntroRepository = inMemoryCameraIntroRepository,
         )
     }
 
-    @After
-    fun tearDown() {
-        unmockkAll()
+    @TestFactory
+    fun `When permissions are granted the usecase should always return PermissionState Granted`(): List<DynamicTest> {
+        val expected = PermissionState.Granted
+        return getAllExpectedPermissionsStates().map { currentPermissionState ->
+            DynamicTest.dynamicTest("$currentPermissionState should return $expected") {
+                inMemoryCameraIntroRepository.value = currentPermissionState.permissionWasTriggeredOnce
+                runTest {
+                    val actual = checkQrScanPermissionUseCase(
+                        permissionsAreGranted = currentPermissionState.resultPermissionGranted,
+                        rationaleShouldBeShown = currentPermissionState.resultRationaleShouldBeShown,
+                        promptWasTriggered = currentPermissionState.resultPromptWasTriggered,
+                    )
+                    assertEquals(expected, actual)
+                }
+            }
+        }
     }
 
-    @Test
-    fun `When permissions are granted the usecase should always return PermissionState Granted`() = runTest {
-        inMemoryCameraIntroRepository.value = currentPermissionsState.permissionWasTriggeredOnce
-        val result = checkQrScanPermissionUseCase(
-            permissionsAreGranted = currentPermissionsState.resultPermissionGranted,
-            rationaleShouldBeShown = currentPermissionsState.resultRationaleShouldBeShown,
-            promptWasTriggered = currentPermissionsState.resultPromptWasTriggered,
+    private fun getAllExpectedPermissionsStates() = getFlagLists(0, 7).map { flags ->
+        PermissionsState(
+            resultPermissionGranted = true,
+            permissionWasTriggeredOnce = flags.getOrElse(0) { false },
+            resultRationaleShouldBeShown = flags.getOrElse(1) { false },
+            resultPromptWasTriggered = flags.getOrElse(2) { false },
         )
-        Assert.assertEquals(result, PermissionState.Granted)
     }
 }

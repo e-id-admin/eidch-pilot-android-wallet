@@ -2,15 +2,15 @@ package ch.admin.foitt.pilotwallet.platform.composables.di
 
 import android.content.Context
 import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.GetColor
+import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.GetDrawable
+import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.GetDrawableFromData
+import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.GetDrawableFromUri
 import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.GetLocalizedDateTime
-import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.GetPainter
-import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.GetPainterFromData
-import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.GetPainterFromUri
 import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.implementation.GetColorImpl
+import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.implementation.GetDrawableFromDataImpl
+import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.implementation.GetDrawableFromUriImpl
+import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.implementation.GetDrawableImpl
 import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.implementation.GetLocalizedDateTimeImpl
-import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.implementation.GetPainterFromDataImpl
-import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.implementation.GetPainterFromUriImpl
-import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.implementation.GetPainterImpl
 import coil.ImageLoader
 import coil.request.CachePolicy
 import dagger.Binds
@@ -42,19 +42,19 @@ internal interface ComposableBindings {
     ): GetColor
 
     @Binds
-    fun bindGetPainter(
-        adapter: GetPainterImpl,
-    ): GetPainter
+    fun bindGetDrawable(
+        adapter: GetDrawableImpl
+    ): GetDrawable
 
     @Binds
-    fun bindGetPainterFromData(
-        adapter: GetPainterFromDataImpl
-    ): GetPainterFromData
+    fun bindGetDrawableFromData(
+        adapter: GetDrawableFromDataImpl
+    ): GetDrawableFromData
 
     @Binds
-    fun bindGetPainterFromUri(
-        adapter: GetPainterFromUriImpl
-    ): GetPainterFromUri
+    fun bindGetDrawableFromUri(
+        adapter: GetDrawableFromUriImpl
+    ): GetDrawableFromUri
 
     @Binds
     fun bindGetLocalizedDateTime(

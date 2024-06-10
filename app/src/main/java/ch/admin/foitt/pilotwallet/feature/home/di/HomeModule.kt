@@ -6,6 +6,8 @@ import ch.admin.foitt.pilotwallet.feature.home.domain.repository.HomeIntroductio
 import ch.admin.foitt.pilotwallet.feature.home.domain.repository.SaveHomeIntroductionIsDone
 import ch.admin.foitt.pilotwallet.feature.home.domain.repository.implementation.GetHomeIntroductionIsDoneImpl
 import ch.admin.foitt.pilotwallet.feature.home.domain.repository.implementation.SaveHomeIntroductionIsDoneImpl
+import ch.admin.foitt.pilotwallet.feature.home.domain.usecase.GetLatestActivityFlow
+import ch.admin.foitt.pilotwallet.feature.home.domain.usecase.implementation.GetLatestActivityFlowImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -28,4 +30,9 @@ interface HomeModule {
     fun bindSaveHomeIntroductionIsDone(
         useCase: SaveHomeIntroductionIsDoneImpl
     ): SaveHomeIntroductionIsDone
+
+    @Binds
+    fun bindGetLatestActivity(
+        useCase: GetLatestActivityFlowImpl
+    ): GetLatestActivityFlow
 }

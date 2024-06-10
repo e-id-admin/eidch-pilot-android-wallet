@@ -15,6 +15,7 @@ import ch.admin.foitt.pilotwallet.platform.login.domain.model.toLoginWithBiometr
 import ch.admin.foitt.pilotwallet.platform.login.domain.usecase.LoginWithBiometrics
 import ch.admin.foitt.pilotwallet.platform.passphrase.domain.model.LoadAndDecryptPassphraseError
 import ch.admin.foitt.pilotwallet.platform.passphrase.domain.usecase.LoadAndDecryptPassphrase
+import ch.admin.foitt.pilotwallet.platform.userInteraction.domain.usecase.UserInteraction
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.coroutines.coroutineBinding
 import com.github.michaelbull.result.mapError
@@ -28,6 +29,7 @@ class LoginWithBiometricsImpl @Inject constructor(
     private val launchBiometricPrompt: LaunchBiometricPrompt,
     private val getBiometricsCipher: GetBiometricsCipher,
     private val openAppDatabase: OpenAppDatabase,
+    private val userInteraction: UserInteraction,
     private val resetBiometrics: ResetBiometrics,
 ) : LoginWithBiometrics {
     @CheckResult
@@ -60,6 +62,10 @@ class LoginWithBiometricsImpl @Inject constructor(
 
             Timber.d("Biometric Authentication succeeded")
         }
+
+        // completing the biometric prompt does apparently not count as a user interaction
+        // -> trigger it manually
+        userInteraction()
 
         return result
             .onFailure { loginWithBiometricsError ->

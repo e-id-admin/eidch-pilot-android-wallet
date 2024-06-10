@@ -8,6 +8,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import ch.admin.foitt.pilotwallet.R
+import ch.admin.foitt.pilotwallet.platform.composables.CredentialDetailBottomSheetItem
 import ch.admin.foitt.pilotwallet.theme.warningLight
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -16,6 +17,7 @@ fun CredentialDetailBottomSheet(
     onDismiss: () -> Unit,
     onDelete: () -> Unit,
     onShowPoliceControl: () -> Unit,
+    onShowActivities: () -> Unit,
     showPoliceControlItem: Boolean
 ) {
     val sheetState = rememberModalBottomSheetState()
@@ -25,17 +27,22 @@ fun CredentialDetailBottomSheet(
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
+        CredentialDetailBottomSheetItem(
+            icon = R.drawable.pilot_ic_clock,
+            title = stringResource(id = R.string.credential_menu_activities_text),
+            onClick = onShowActivities,
+        )
+        HorizontalDivider()
         if (showPoliceControlItem) {
             CredentialDetailBottomSheetItem(
-                R.drawable.pilot_ic_eye,
+                icon = R.drawable.pilot_ic_eye,
                 title = stringResource(id = R.string.credential_menu_police_control_text),
-                onClick = onShowPoliceControl
-
+                onClick = onShowPoliceControl,
             )
             HorizontalDivider()
         }
         CredentialDetailBottomSheetItem(
-            R.drawable.pilot_ic_bin,
+            icon = R.drawable.pilot_ic_bin_bb,
             title = stringResource(id = R.string.credential_menu_delete_text),
             onClick = onDelete,
             color = MaterialTheme.colorScheme.warningLight

@@ -20,10 +20,11 @@ import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.security.KeyStoreException
 import java.security.NoSuchAlgorithmException
 import java.security.spec.AlgorithmParameterSpec
@@ -48,7 +49,7 @@ class GetCipherForDecryptionTest {
 
     private val initializationVector = byteArrayOf(1, 1, 1, 1)
 
-    @Before
+    @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
         mockkStatic(Cipher::class)
@@ -69,7 +70,7 @@ class GetCipherForDecryptionTest {
         )
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -82,7 +83,7 @@ class GetCipherForDecryptionTest {
             initializationVector = initializationVector
         )
 
-        Assert.assertNotNull(cipherResult.get())
+        assertNotNull(cipherResult.get())
 
         coVerify(exactly = 1) {
             mockGetOrCreateSecretKey.invoke(any())
@@ -99,8 +100,8 @@ class GetCipherForDecryptionTest {
             initializationVector = initializationVector
         )
 
-        Assert.assertNotNull(cipherResult.getError())
-        Assert.assertTrue(cipherResult.getError() is GetCipherForDecryptionError.Unexpected)
+        assertNotNull(cipherResult.getError())
+        assertTrue(cipherResult.getError() is GetCipherForDecryptionError.Unexpected)
     }
 
     @Test
@@ -112,7 +113,7 @@ class GetCipherForDecryptionTest {
             initializationVector = initializationVector
         )
 
-        Assert.assertNotNull(cipherResult.getError())
-        Assert.assertTrue(cipherResult.getError() is GetCipherForDecryptionError.Unexpected)
+        assertNotNull(cipherResult.getError())
+        assertTrue(cipherResult.getError() is GetCipherForDecryptionError.Unexpected)
     }
 }

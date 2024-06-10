@@ -1,6 +1,8 @@
 package ch.admin.foitt.pilotwallet.platform.utils
 
 import android.text.format.DateFormat
+import java.time.Instant
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -20,7 +22,14 @@ fun ZonedDateTime.asDayMonthYear(locale: Locale = Locale.getDefault()): String {
     return formatPattern(localizedPattern, locale)
 }
 
+fun ZonedDateTime.asMonthYear(locale: Locale = Locale.getDefault()): String {
+    val localizedPattern = DateFormat.getBestDateTimePattern(locale, "MMMM yyyy")
+    return formatPattern(localizedPattern, locale).uppercase(locale)
+}
+
+fun Long.epochSecondsToZonedDateTime(): ZonedDateTime = Instant.ofEpochSecond(this).atZone(ZoneId.systemDefault())
+
 private fun ZonedDateTime.formatPattern(
     pattern: String,
-    locale: Locale = Locale.getDefault(),
+    locale: Locale,
 ) = format(DateTimeFormatter.ofPattern(pattern, locale))

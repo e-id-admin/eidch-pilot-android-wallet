@@ -8,6 +8,10 @@ import ch.admin.foitt.pilotwallet.feature.changeLogin.presentation.EnterCurrentP
 import ch.admin.foitt.pilotwallet.feature.changeLogin.presentation.EnterCurrentPinViewModel
 import ch.admin.foitt.pilotwallet.feature.changeLogin.presentation.EnterNewPinScreen
 import ch.admin.foitt.pilotwallet.feature.changeLogin.presentation.EnterNewPinViewModel
+import ch.admin.foitt.pilotwallet.feature.credentialActivities.presentation.CredentialActivitiesScreen
+import ch.admin.foitt.pilotwallet.feature.credentialActivities.presentation.CredentialActivitiesViewModel
+import ch.admin.foitt.pilotwallet.feature.credentialActivities.presentation.CredentialActivityDetailScreen
+import ch.admin.foitt.pilotwallet.feature.credentialActivities.presentation.CredentialActivityDetailViewModel
 import ch.admin.foitt.pilotwallet.feature.credentialDelete.presentation.CredentialDeleteScreen
 import ch.admin.foitt.pilotwallet.feature.credentialDelete.presentation.CredentialDeleteViewModel
 import ch.admin.foitt.pilotwallet.feature.credentialDetail.presentation.CredentialDetailScreen
@@ -62,6 +66,8 @@ import ch.admin.foitt.pilotwallet.feature.qrscan.presentation.QrScanPermissionSc
 import ch.admin.foitt.pilotwallet.feature.qrscan.presentation.QrScanPermissionViewModel
 import ch.admin.foitt.pilotwallet.feature.qrscan.presentation.QrScannerScreen
 import ch.admin.foitt.pilotwallet.feature.qrscan.presentation.QrScannerViewModel
+import ch.admin.foitt.pilotwallet.feature.recentCredentialActivities.presentation.RecentCredentialActivitiesScreen
+import ch.admin.foitt.pilotwallet.feature.recentCredentialActivities.presentation.RecentCredentialActivitiesViewModel
 import ch.admin.foitt.pilotwallet.feature.settings.presentation.SettingsScreen
 import ch.admin.foitt.pilotwallet.feature.settings.presentation.SettingsViewModel
 import ch.admin.foitt.pilotwallet.feature.settings.presentation.biometrics.AuthWithPinScreen
@@ -82,6 +88,8 @@ import ch.admin.foitt.pilotwallet.feature.settings.presentation.security.DataAna
 import ch.admin.foitt.pilotwallet.feature.settings.presentation.security.DataAnalysisViewModel
 import ch.admin.foitt.pilotwallet.feature.settings.presentation.security.SecuritySettingsScreen
 import ch.admin.foitt.pilotwallet.feature.settings.presentation.security.SecuritySettingsViewModel
+import ch.admin.foitt.pilotwallet.feature.settings.presentation.verification.GetVerifiedScreen
+import ch.admin.foitt.pilotwallet.feature.settings.presentation.verification.GetVerifiedViewModel
 import ch.admin.foitt.pilotwallet.platform.invitation.presentation.InvalidCredentialErrorScreen
 import ch.admin.foitt.pilotwallet.platform.invitation.presentation.InvalidCredentialErrorViewModel
 import ch.admin.foitt.pilotwallet.platform.invitation.presentation.InvitationFailureScreen
@@ -98,6 +106,8 @@ import ch.admin.foitt.pilotwalletcomposedestinations.destinations.AuthWithPinScr
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.BiometricLoginScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.ConfirmNewPinScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.ConfirmPinScreenDestination
+import ch.admin.foitt.pilotwalletcomposedestinations.destinations.CredentialActivitiesScreenDestination
+import ch.admin.foitt.pilotwalletcomposedestinations.destinations.CredentialActivityDetailScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.CredentialDeleteScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.CredentialDetailScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.CredentialOfferErrorScreenDestination
@@ -110,6 +120,7 @@ import ch.admin.foitt.pilotwalletcomposedestinations.destinations.EnableBiometri
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.EnterCurrentPinScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.EnterNewPinScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.EnterPinScreenDestination
+import ch.admin.foitt.pilotwalletcomposedestinations.destinations.GetVerifiedScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.HomeScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.ImpressumScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.InvalidCredentialErrorScreenDestination
@@ -133,6 +144,7 @@ import ch.admin.foitt.pilotwalletcomposedestinations.destinations.PresentationSu
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.PresentationValidationErrorScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.QrScanPermissionScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.QrScannerScreenDestination
+import ch.admin.foitt.pilotwalletcomposedestinations.destinations.RecentCredentialActivitiesScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.RegisterBiometricsScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.SecuritySettingsScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.SettingsScreenDestination
@@ -233,6 +245,10 @@ fun NavigationHost(
             LicencesScreen(viewModel)
         }
 
+        screenDestination(GetVerifiedScreenDestination) { viewModel: GetVerifiedViewModel ->
+            GetVerifiedScreen(viewModel)
+        }
+
         screenDestination(QrScanPermissionScreenDestination) { viewModel: QrScanPermissionViewModel ->
             QrScanPermissionScreen(viewModel)
         }
@@ -311,6 +327,18 @@ fun NavigationHost(
 
         screenDestination(CredentialDetailScreenDestination) { viewModel: CredentialDetailViewModel ->
             CredentialDetailScreen(viewModel)
+        }
+
+        screenDestination(RecentCredentialActivitiesScreenDestination) { viewModel: RecentCredentialActivitiesViewModel ->
+            RecentCredentialActivitiesScreen(viewModel)
+        }
+
+        screenDestination(CredentialActivitiesScreenDestination) { viewModel: CredentialActivitiesViewModel ->
+            CredentialActivitiesScreen(viewModel)
+        }
+
+        screenDestination(CredentialActivityDetailScreenDestination) { viewModel: CredentialActivityDetailViewModel ->
+            CredentialActivityDetailScreen(viewModel)
         }
 
         screenDestination(CredentialDeleteScreenDestination) { viewModel: CredentialDeleteViewModel ->

@@ -22,9 +22,9 @@ import io.mockk.just
 import io.mockk.runs
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class HandleInvitationProcessingErrorTest {
     @MockK
@@ -32,7 +32,7 @@ class HandleInvitationProcessingErrorTest {
 
     private lateinit var handleInvitationProcessingError: HandleInvitationProcessingError
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -43,7 +43,7 @@ class HandleInvitationProcessingErrorTest {
         )
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -53,7 +53,7 @@ class HandleInvitationProcessingErrorTest {
         definedErrorDestinations.forEach { (error, destination) ->
             handleInvitationProcessingError(
                 error,
-                someDeepLink,
+                SOME_DEEP_LINK,
             ).navigate()
 
             coVerify(exactly = 1) {
@@ -67,13 +67,13 @@ class HandleInvitationProcessingErrorTest {
     }
 
     companion object {
-        private const val someDeepLink = "openid-credential-offer://credential_offer=..."
+        private const val SOME_DEEP_LINK = "openid-credential-offer://credential_offer=..."
 
         private val definedErrorDestinations: Map<ProcessInvitationError, Direction> = mapOf(
             InvitationError.EmptyWallet to PresentationEmptyWalletScreenDestination,
             InvitationError.InvalidCredentialInvitation to InvalidCredentialErrorScreenDestination,
             InvitationError.InvalidInput to InvitationFailureScreenDestination,
-            InvitationError.NetworkError to NoInternetConnectionScreenDestination(someDeepLink),
+            InvitationError.NetworkError to NoInternetConnectionScreenDestination(SOME_DEEP_LINK),
             InvitationError.NoMatchingCredential to PresentationNoMatchScreenDestination,
             InvitationError.Unexpected to InvitationFailureScreenDestination,
             InvitationError.UnknownIssuer to UnknownIssuerErrorScreenDestination,

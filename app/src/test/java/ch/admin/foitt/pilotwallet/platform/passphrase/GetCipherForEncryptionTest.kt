@@ -19,9 +19,9 @@ import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.unmockkAll
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.security.KeyStoreException
 import java.security.NoSuchAlgorithmException
 import java.security.spec.AlgorithmParameterSpec
@@ -44,7 +44,7 @@ class GetCipherForEncryptionTest {
 
     private lateinit var testedUseCase: GetCipherForEncryption
 
-    @Before
+    @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
         mockkStatic(Cipher::class)
@@ -67,7 +67,7 @@ class GetCipherForEncryptionTest {
         )
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

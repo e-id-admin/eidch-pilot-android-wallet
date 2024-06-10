@@ -23,8 +23,8 @@ data class CredentialClaim(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val credentialId: Long, // ForeignKey
-    val key: String,
-    val value: String,
-    val valueType: String?,
+    override val key: String,
+    override val value: String,
+    override val valueType: String?,
     val order: Int = -1
-)
+) : Claim

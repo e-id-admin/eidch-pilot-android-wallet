@@ -23,6 +23,6 @@ data class CredentialClaimDisplay(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val claimId: Long, // Foreign Key
-    val name: String,
+    override val name: String,
     override val locale: String,
-) : LocalizedDisplay
+) : ClaimDisplay

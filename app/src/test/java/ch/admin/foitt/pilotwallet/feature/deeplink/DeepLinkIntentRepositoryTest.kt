@@ -4,10 +4,10 @@ import ch.admin.foitt.pilotwallet.platform.deeplink.data.DeepLinkIntentRepositor
 import ch.admin.foitt.pilotwallet.platform.deeplink.domain.repository.DeepLinkIntentRepository
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class DeepLinkIntentRepositoryTest {
 
@@ -15,7 +15,7 @@ class DeepLinkIntentRepositoryTest {
 
     private lateinit var intentRepository: DeepLinkIntentRepository
 
-    @Before
+    @BeforeEach
     fun setUp() {
         testDeepLink = "openid-credential-offer://credential_offer=..."
         intentRepository = DeepLinkIntentRepositoryImpl()
@@ -27,16 +27,16 @@ class DeepLinkIntentRepositoryTest {
 
         val retrievedIntent = intentRepository.get()
 
-        Assert.assertEquals(testDeepLink, retrievedIntent)
+        Assertions.assertEquals(testDeepLink, retrievedIntent)
 
         intentRepository.reset()
 
         val retrievedIntent2 = intentRepository.get()
 
-        Assert.assertNull(retrievedIntent2)
+        Assertions.assertNull(retrievedIntent2)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

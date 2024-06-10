@@ -20,9 +20,9 @@ import io.mockk.just
 import io.mockk.runs
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class HandleInvitationProcessingSuccessTest {
 
@@ -31,7 +31,7 @@ class HandleInvitationProcessingSuccessTest {
 
     private lateinit var handleInvitationProcessingSuccess: HandleInvitationProcessingSuccess
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -42,7 +42,7 @@ class HandleInvitationProcessingSuccessTest {
         )
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -90,15 +90,15 @@ class HandleInvitationProcessingSuccessTest {
         )
 
         private val definedSuccessDestinations: Map<ProcessInvitationResult, Direction> = mapOf(
-            mockCredentialOfferResult
-                to CredentialOfferScreenDestination(mockCredentialOfferResult.credentialId),
-            mockPresentationRequestResult
-                to PresentationRequestScreenDestination(mockPresentationRequestResult.credential, mockPresentationRequestResult.request),
-            mockPresentationRequestListResult
-                to PresentationCredentialListScreenDestination(
-                    mockPresentationRequestListResult.credentials.toTypedArray(),
-                    mockPresentationRequestListResult.request,
-                ),
+            mockCredentialOfferResult to CredentialOfferScreenDestination(mockCredentialOfferResult.credentialId),
+            mockPresentationRequestResult to PresentationRequestScreenDestination(
+                mockPresentationRequestResult.credential,
+                mockPresentationRequestResult.request
+            ),
+            mockPresentationRequestListResult to PresentationCredentialListScreenDestination(
+                mockPresentationRequestListResult.credentials.toTypedArray(),
+                mockPresentationRequestListResult.request,
+            ),
         )
     }
 }

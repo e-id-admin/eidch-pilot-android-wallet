@@ -4,7 +4,8 @@
 <img src="app/src/main/ic_launcher-playstore.png" width="200" />
 </div>
 
-An official Swiss Government project made by the [Federal Office of Information Technology, Systems and Telecommunication FOITT](https://www.bit.admin.ch/)
+An official Swiss Government project made by
+the [Federal Office of Information Technology, Systems and Telecommunication FOITT](https://www.bit.admin.ch/)
 as part of the electronic identity (E-ID) project.
 
 <div align="left">
@@ -21,13 +22,13 @@ as part of the electronic identity (E-ID) project.
 - [Contribution Guide](#contribution-guide)
 - [License](#license)
 
-
 ## Overview
 
 The pilotWallet app is part of the ecosystem developed for the future official Swiss E-ID.<br/>
 The main objective of this early stage development release is to get user and community feedback as early as possible.<br/>
 
-For more information about the project please visit the [infopage](https://github.com/e-id-admin/eidch-pilot-elfa-base-infrastructure?tab=readme-ov-file#project-context).
+For more information about the project please visit
+the [infopage](https://github.com/e-id-admin/eidch-pilot-elfa-base-infrastructure?tab=readme-ov-file#project-context).
 
 ### Specifications
 
@@ -41,13 +42,11 @@ Following specifications were used for the implementation:
 > [!NOTE]
 > Please be aware that only parts of these specifications were implemented in this early phase.
 
-
 ## Repositories
 
 * Android App: [pilot-android-wallet](https://github.com/e-id-admin/eidch-pilot-android-wallet)
 * iOS App: [pilot-ios-wallet](https://github.com/e-id-admin/eidch-pilot-ios-wallet)
 * Issuer, Verifier & Base registry: [pilot-elfa-base-infrastructure](https://github.com/e-id-admin/eidch-pilot-elfa-base-infrastructure)
-
 
 ## Installation and Building
 
@@ -63,11 +62,13 @@ $ ./gradlew app:assembleProdRelease
 You can then find the generated APK under `app/build/outputs/apk/prod/release/app-prod-release.apk`.
 
 > [!NOTE]
-> Please be aware that for building from the command line, you must have set up your own keystore.
+> Please be aware that for building for the release build type, you must have set up your own keystore.
+> Alternatively, you can use Android Studio to [build and start a debug version](https://developer.android.com/studio/run).
 
 ## Contribution Guide
 
-We welcome any feedback on the code regarding both the implementation and security aspects. Please follow the guidelines for contributing found in [CONTRIBUTING.md](./CONTRIBUTING.md).
+We welcome any feedback on the code regarding both the implementation and security aspects. Please follow the guidelines for contributing
+found in [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 

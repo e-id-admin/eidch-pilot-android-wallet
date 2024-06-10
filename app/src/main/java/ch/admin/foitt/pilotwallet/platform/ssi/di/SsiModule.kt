@@ -26,6 +26,7 @@ import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.GetCredentialClaim
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.GetCredentialRaw
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.GetLocalizedCredentialDisplayFlow
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.GetLocalizedCredentialIssuerDisplay
+import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.MapToCredentialClaimData
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.implementation.DeleteCredentialImpl
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.implementation.GetAllCredentialBodiesImpl
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.implementation.GetAllCredentialsImpl
@@ -40,6 +41,7 @@ import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.implementation.Get
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.implementation.GetCredentialRawImpl
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.implementation.GetLocalizedCredentialDisplayFlowImpl
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.implementation.GetLocalizedCredentialIssuerDisplayImpl
+import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.implementation.MapToCredentialClaimDataImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -132,6 +134,11 @@ interface SsiModule {
     fun bindGetCredentialClaimData(
         useCase: GetCredentialClaimDataImpl
     ): GetCredentialClaimData
+
+    @Binds
+    fun bindMapToCredentialClaimData(
+        useCase: MapToCredentialClaimDataImpl
+    ): MapToCredentialClaimData
 
     @Binds
     fun bindGetCredentialRaw(

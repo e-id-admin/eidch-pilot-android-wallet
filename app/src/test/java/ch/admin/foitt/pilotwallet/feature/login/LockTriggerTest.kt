@@ -3,7 +3,7 @@ package ch.admin.foitt.pilotwallet.feature.login
 import ch.admin.foitt.pilotwallet.feature.login.domain.usecase.IsDevicePinSet
 import ch.admin.foitt.pilotwallet.feature.login.domain.usecase.implementation.LockTriggerImpl
 import ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.domain.model.AppLifecycleState
-import ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.domain.repository.AppLifecycleRepository
+import ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.domain.usecase.GetAppLifecycleState
 import ch.admin.foitt.pilotwallet.platform.database.domain.usecase.CloseAppDatabase
 import ch.admin.foitt.pilotwallet.platform.database.domain.usecase.IsAppDatabaseOpen
 import ch.admin.foitt.pilotwallet.platform.navigation.NavigationManager
@@ -22,9 +22,9 @@ import io.mockk.just
 import io.mockk.unmockkAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 internal class LockTriggerTest {
 
@@ -35,7 +35,7 @@ internal class LockTriggerTest {
     private lateinit var mockCloseAppDatabase: CloseAppDatabase
 
     @MockK
-    private lateinit var mockAppLifecycleRepo: AppLifecycleRepository
+    private lateinit var mockGetAppLifecycleState: GetAppLifecycleState
 
     @MockK
     private lateinit var mockIsAppDatabaseOpen: IsAppDatabaseOpen
@@ -43,7 +43,7 @@ internal class LockTriggerTest {
     @MockK
     private lateinit var mockIsDevicePinSet: IsDevicePinSet
 
-    @Before
+    @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
 
@@ -51,7 +51,7 @@ internal class LockTriggerTest {
         coEvery { mockCloseAppDatabase() } just Runs
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -326,14 +326,14 @@ internal class LockTriggerTest {
     ) = runTest {
         coEvery { mockNavManager.currentDestinationFlow } returns MutableStateFlow(currentDestination)
         coEvery { mockNavManager.currentDestination } returns currentDestination
-        coEvery { mockAppLifecycleRepo.state } returns MutableStateFlow(appLifecycleState)
+        coEvery { mockGetAppLifecycleState() } returns MutableStateFlow(appLifecycleState)
         coEvery { mockIsAppDatabaseOpen.invoke() } returns isAppDatabaseOpen
         coEvery { mockIsDevicePinSet.invoke() } returns isDevicePinSet
 
         val useCase = LockTriggerImpl(
             navManager = mockNavManager,
             closeAppDatabase = mockCloseAppDatabase,
-            appLifecycleRepo = mockAppLifecycleRepo,
+            getAppLifecycleState = mockGetAppLifecycleState,
             isAppDatabaseOpen = mockIsAppDatabaseOpen,
             isDevicePinSet = mockIsDevicePinSet,
             ioDispatcherScope = backgroundScope,

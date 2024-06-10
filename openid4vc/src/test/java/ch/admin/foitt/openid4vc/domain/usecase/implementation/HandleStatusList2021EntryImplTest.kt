@@ -13,12 +13,12 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.net.URL
 import java.util.zip.ZipException
 
@@ -28,7 +28,7 @@ class HandleStatusList2021EntryImplTest {
 
     private lateinit var handleStatusList2021Entry: HandleStatusList2021Entry
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -87,7 +87,7 @@ class HandleStatusList2021EntryImplTest {
         assertTrue(result.getError() is HandleStatusList2021EntryError.Unexpected)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

@@ -10,6 +10,7 @@ import ch.admin.foitt.pilotwallet.platform.login.domain.usecase.LoginWithPin
 import ch.admin.foitt.pilotwallet.platform.passphraseHashing.domain.usecase.HashPassphrase
 import ch.admin.foitt.pilotwallet.platform.passphrasePeppering.domain.model.PepperPassphraseError
 import ch.admin.foitt.pilotwallet.platform.passphrasePeppering.domain.usecase.PepperPassphrase
+import ch.admin.foitt.pilotwallet.platform.userInteraction.domain.usecase.UserInteraction
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.coroutines.coroutineBinding
 import com.github.michaelbull.result.mapError
@@ -21,6 +22,7 @@ class LoginWithPinImpl @Inject constructor(
     private val hashPassphrase: HashPassphrase,
     private val openAppDatabase: OpenAppDatabase,
     private val pepperPassphrase: PepperPassphrase,
+    private val userInteraction: UserInteraction,
 ) : LoginWithPin {
 
     @CheckResult
@@ -38,6 +40,10 @@ class LoginWithPinImpl @Inject constructor(
         ).mapError(
             PepperPassphraseError::toLoginWithPinError
         ).bind()
+
+        // touching the keyboard does apparently not count as a user interaction on some devices (f. e. samsung galaxy a53)
+        // -> trigger it manually
+        userInteraction()
 
         openAppDatabase(
             passphrase = pepperedPinHash.hash

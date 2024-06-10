@@ -25,10 +25,10 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class GetAndRefreshCredentialValidityTest {
     @MockK
@@ -45,7 +45,7 @@ class GetAndRefreshCredentialValidityTest {
 
     private lateinit var getAndRefreshCredentialValidity: GetAndRefreshCredentialValidity
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -261,7 +261,7 @@ class GetAndRefreshCredentialValidityTest {
         assertEquals(expectUnknown, resultUnknown.get())
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

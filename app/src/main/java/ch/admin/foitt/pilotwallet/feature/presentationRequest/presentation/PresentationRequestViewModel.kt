@@ -1,5 +1,6 @@
 package ch.admin.foitt.pilotwallet.feature.presentationRequest.presentation
 
+import android.graphics.drawable.Drawable
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -7,9 +8,13 @@ import ch.admin.foitt.openid4vc.domain.usecase.DeclinePresentation
 import ch.admin.foitt.pilotwallet.feature.presentationRequest.domain.model.PresentationRequestError
 import ch.admin.foitt.pilotwallet.feature.presentationRequest.domain.usecase.GeneratePresentationMetadata
 import ch.admin.foitt.pilotwallet.feature.presentationRequest.domain.usecase.SubmitPresentation
-import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.GetPainterFromUri
+import ch.admin.foitt.pilotwallet.platform.activity.domain.usecase.SaveActivityForPresentation
+import ch.admin.foitt.pilotwallet.platform.composables.presentation.adapter.GetDrawableFromUri
 import ch.admin.foitt.pilotwallet.platform.credential.domain.usecase.GetCredentialPreviewFlow
 import ch.admin.foitt.pilotwallet.platform.credential.presentation.adapter.GetCredentialCardState
+import ch.admin.foitt.pilotwallet.platform.credential.presentation.model.CredentialCardState
+import ch.admin.foitt.pilotwallet.platform.database.domain.model.ActivityType
+import ch.admin.foitt.pilotwallet.platform.database.domain.model.CredentialStatus
 import ch.admin.foitt.pilotwallet.platform.di.IoDispatcherScope
 import ch.admin.foitt.pilotwallet.platform.navigation.NavigationManager
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.model.ErrorDialogState
@@ -18,6 +23,7 @@ import ch.admin.foitt.pilotwallet.platform.scaffold.domain.usecase.SetErrorDialo
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.usecase.SetTopBarState
 import ch.admin.foitt.pilotwallet.platform.scaffold.presentation.ScreenViewModel
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.model.CredentialClaimData
+import ch.admin.foitt.pilotwallet.platform.utils.toPainter
 import ch.admin.foitt.pilotwallet.platform.utils.trackCompletion
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.PresentationDeclinedScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.PresentationFailureScreenDestination
@@ -48,7 +54,8 @@ class PresentationRequestViewModel @Inject constructor(
     private val setErrorDialogState: SetErrorDialogState,
     @IoDispatcherScope private val ioDispatcherScope: CoroutineScope,
     private val getCredentialCardState: GetCredentialCardState,
-    private val getPainterFromUri: GetPainterFromUri,
+    private val getDrawableFromUri: GetDrawableFromUri,
+    private val saveActivityForPresentation: SaveActivityForPresentation,
     savedStateHandle: SavedStateHandle,
     setTopBarState: SetTopBarState,
 ) : ScreenViewModel(setTopBarState, addBottomSystemBarPaddings = false) {
@@ -59,17 +66,22 @@ class PresentationRequestViewModel @Inject constructor(
     private val presentationRequest = navArgs.presentationRequest
 
     val verifierName = navArgs.presentationRequest.clientMetaData?.clientName
-    val verifierLogo: StateFlow<Painter?> = flow {
-        emit(getPainterFromUri(navArgs.presentationRequest.clientMetaData?.logoUri))
+    private val verifierLogoDrawable: StateFlow<Drawable?> = flow {
+        emit(getDrawableFromUri(navArgs.presentationRequest.clientMetaData?.logoUri))
     }.toStateFlow(null)
 
-    private val _requestedData: MutableStateFlow<List<CredentialClaimData>> =
-        MutableStateFlow(emptyList())
+    val verifierLogoPainter: StateFlow<Painter?> = verifierLogoDrawable.map { drawable ->
+        drawable?.toPainter()
+    }.toStateFlow(null)
+
+    private val _requestedData: MutableStateFlow<List<CredentialClaimData>> = MutableStateFlow(emptyList())
     val requestedClaims = _requestedData.asStateFlow()
 
-    val credentialState = getCredentialPreviewFlow(compatibleCredential.credentialId).map { credentialPreview ->
+    val credentialState: StateFlow<CredentialCardState> = getCredentialPreviewFlow(
+        compatibleCredential.credentialId
+    ).map { credentialPreview ->
         getCredentialCardState(credentialPreview)
-    }
+    }.toStateFlow(CredentialCardState.EMPTY)
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
@@ -91,6 +103,7 @@ class PresentationRequestViewModel @Inject constructor(
 
     fun submit() {
         viewModelScope.launch {
+            storeActivityForPresentation(type = ActivityType.PRESENTATION_ACCEPTED)
             submitPresentation(
                 presentationRequest = presentationRequest,
                 compatibleCredential = compatibleCredential,
@@ -109,11 +122,22 @@ class PresentationRequestViewModel @Inject constructor(
 
     fun onDecline() {
         ioDispatcherScope.launch {
+            storeActivityForPresentation(type = ActivityType.PRESENTATION_DECLINED)
             declinePresentation(presentationRequest.responseUri).onFailure { error ->
                 Timber.w("Decline presentation error: $error")
             }
         }
         navManager.navigateToAndClearCurrent(PresentationDeclinedScreenDestination)
+    }
+
+    private suspend fun storeActivityForPresentation(type: ActivityType) {
+        saveActivityForPresentation(
+            activityType = type,
+            compatibleCredential = compatibleCredential,
+            credentialStatus = credentialState.value.status ?: CredentialStatus.UNKNOWN,
+            verifierLogo = verifierLogoDrawable.value,
+            verifierName = verifierName ?: ""
+        )
     }
 
     private fun navigateToSuccess() {

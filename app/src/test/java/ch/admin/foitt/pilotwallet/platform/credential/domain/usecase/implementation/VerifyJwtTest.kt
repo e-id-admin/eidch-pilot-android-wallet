@@ -15,12 +15,12 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import ch.admin.foitt.openid4vc.domain.model.credentialoffer.CredentialOfferError as OpenIdCredentialOfferError
 
 class VerifyJwtTest {
@@ -33,7 +33,7 @@ class VerifyJwtTest {
 
     private lateinit var verifyJwt: VerifyJwt
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -96,7 +96,7 @@ class VerifyJwtTest {
         assertTrue(result.getError() is CredentialOfferError.Unexpected)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

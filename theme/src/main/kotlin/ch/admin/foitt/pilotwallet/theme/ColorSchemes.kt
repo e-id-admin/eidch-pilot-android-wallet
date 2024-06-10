@@ -54,3 +54,5 @@ val ColorScheme.labelBackground @Stable get() = Colors.white03
 val ColorScheme.activeButtonBackground @Stable get() = Colors.green05
 val ColorScheme.policeQrCodeBackground @Stable get() = Colors.grey09
 val ColorScheme.onboardingProgressStepInactive @Stable get() = Colors.grey10
+val ColorScheme.textLabels @Stable get() = Colors.grey05
+val ColorScheme.textOutline @Stable get() = Colors.grey02

@@ -1,9 +1,9 @@
 package ch.admin.foitt.openid4vc.util
 
-import org.junit.Assert.fail
+import org.junit.jupiter.api.Assertions.fail
 
 fun assertTrue(condition: Boolean, message: () -> String) {
     if (!condition) {
-        fail(message())
+        fail<String>(message())
     }
 }

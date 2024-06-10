@@ -20,10 +20,11 @@ import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class ValidateInvitationImplTest {
 
@@ -53,7 +54,7 @@ class ValidateInvitationImplTest {
 
     private lateinit var validateInvitationUseCase: ValidateInvitation
 
-    @Before
+    @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
 
@@ -66,7 +67,7 @@ class ValidateInvitationImplTest {
         coEvery { mockGetPresentationRequestFromUri.invoke(uri = any()) } returns Ok(mockPresentationRequest)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -84,7 +85,7 @@ class ValidateInvitationImplTest {
             mockGetPresentationRequestFromUri.invoke(uri = any())
         }
 
-        Assert.assertEquals(mockCredentialOffer, useCaseResult.get())
+        assertEquals(mockCredentialOffer, useCaseResult.get())
     }
 
     @Test
@@ -100,24 +101,24 @@ class ValidateInvitationImplTest {
             mockGetCredentialOfferFromUri.invoke(uri = any())
         }
 
-        Assert.assertEquals(mockPresentationRequest, useCaseResult.get())
+        assertEquals(mockPresentationRequest, useCaseResult.get())
     }
 
     @Test
     fun `unsupported URI should return an error`() = runTest {
-        Assert.assertTrue(
-            "empty input should return an error",
-            validateInvitationUseCase(input = "").getError() is InvitationError.UnknownSchema
+        assertTrue(
+            validateInvitationUseCase(input = "").getError() is InvitationError.UnknownSchema,
+            "empty input should return an error"
         )
 
-        Assert.assertTrue(
-            "input without a valid uri should return an error",
-            validateInvitationUseCase(input = " http//blah").getError() is InvitationError.InvalidUri
+        assertTrue(
+            validateInvitationUseCase(input = " http//blah").getError() is InvitationError.InvalidUri,
+            "input without a valid uri should return an error"
         )
 
-        Assert.assertTrue(
-            "input without a supported schema should return an error",
-            validateInvitationUseCase(input = "unknown-schema://example.org").getError() is InvitationError.UnknownSchema
+        assertTrue(
+            validateInvitationUseCase(input = "unknown-schema://example.org").getError() is InvitationError.UnknownSchema,
+            "input without a supported schema should return an error"
         )
     }
 
@@ -134,9 +135,7 @@ class ValidateInvitationImplTest {
             mockGetCredentialOfferFromUri.invoke(uri = any())
         }
 
-        Assert.assertTrue(
-            useCaseResult.getError() is InvitationError
-        )
+        assertTrue(useCaseResult.getError() is InvitationError)
     }
 
     @Test
@@ -152,8 +151,6 @@ class ValidateInvitationImplTest {
             mockGetPresentationRequestFromUri.invoke(uri = any())
         }
 
-        Assert.assertTrue(
-            useCaseResult.getError() is InvitationError
-        )
+        assertTrue(useCaseResult.getError() is InvitationError)
     }
 }

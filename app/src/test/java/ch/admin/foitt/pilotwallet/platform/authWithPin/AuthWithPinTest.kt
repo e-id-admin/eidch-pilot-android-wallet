@@ -26,10 +26,12 @@ import io.mockk.just
 import io.mockk.runs
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class AuthWithPinTest {
 
@@ -50,7 +52,7 @@ class AuthWithPinTest {
 
     private lateinit var testedUseCase: AuthWithPin
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -72,8 +74,8 @@ class AuthWithPinTest {
     fun `A successful auth with pin call follows specific steps`() = runTest {
         val result = testedUseCase(pin = "123")
 
-        Assert.assertNotNull(result.get())
-        Assert.assertNull(result.getError())
+        assertNotNull(result.get())
+        assertNull(result.getError())
 
         coVerify(ordering = Ordering.ORDERED) {
             mockHashPassphrase.invoke(any(), any())
@@ -88,7 +90,7 @@ class AuthWithPinTest {
 
         val result = testedUseCase(pin = "123")
 
-        Assert.assertTrue(result.getError() is AuthWithPinError.Unexpected)
+        assertTrue(result.getError() is AuthWithPinError.Unexpected)
         coVerify(exactly = 1) {
             mockSetErrorDialogState.invoke(any())
         }
@@ -100,7 +102,7 @@ class AuthWithPinTest {
 
         val result = testedUseCase(pin = "123")
 
-        Assert.assertTrue(result.getError() is AuthWithPinError.Unexpected)
+        assertTrue(result.getError() is AuthWithPinError.Unexpected)
         coVerify(exactly = 1) {
             mockSetErrorDialogState.invoke(any())
         }
@@ -112,10 +114,10 @@ class AuthWithPinTest {
 
         val result = testedUseCase(pin = "123")
 
-        Assert.assertTrue(result.getError() is AuthWithPinError.InvalidPassphrase)
+        assertTrue(result.getError() is AuthWithPinError.InvalidPassphrase)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

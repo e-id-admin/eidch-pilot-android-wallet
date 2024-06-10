@@ -3,11 +3,12 @@ package ch.admin.foitt.pilotwallet.feature.credentialDetail.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import ch.admin.foitt.pilotwallet.R
-import ch.admin.foitt.pilotwallet.feature.credentialDetail.domain.usecase.GetPoliceQrCode
 import ch.admin.foitt.pilotwallet.platform.credential.domain.usecase.GetCredentialPreviewFlow
 import ch.admin.foitt.pilotwallet.platform.credential.presentation.adapter.GetCredentialCardState
 import ch.admin.foitt.pilotwallet.platform.credential.presentation.model.CredentialCardState
+import ch.admin.foitt.pilotwallet.platform.navArgs.domain.model.CredentialActivitiesNavArg
 import ch.admin.foitt.pilotwallet.platform.navigation.NavigationManager
+import ch.admin.foitt.pilotwallet.platform.policeQrCode.usecase.GetPoliceQrCode
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.model.ErrorDialogState
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.model.TopBarState
 import ch.admin.foitt.pilotwallet.platform.scaffold.domain.usecase.SetErrorDialogState
@@ -16,6 +17,8 @@ import ch.admin.foitt.pilotwallet.platform.scaffold.presentation.ScreenViewModel
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.usecase.GetCredentialClaimsData
 import ch.admin.foitt.pilotwallet.platform.updateCredentialStatus.domain.usecase.UpdateCredentialStatus
 import ch.admin.foitt.pilotwallet.platform.utils.launchWithDelayedLoading
+import ch.admin.foitt.pilotwallet.platform.utils.trackCompletion
+import ch.admin.foitt.pilotwalletcomposedestinations.destinations.CredentialActivitiesScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.CredentialDeleteScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.CredentialDetailScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.PoliceQrCodeScreenDestination
@@ -30,6 +33,7 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -56,6 +60,9 @@ class CredentialDetailViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
     private val _showBottomSheet = MutableStateFlow(false)
     val showBottomSheet = _showBottomSheet.asStateFlow()
 
@@ -67,8 +74,8 @@ class CredentialDetailViewModel @Inject constructor(
                 qrCodeImageData = imageData
             }
             .onFailure { error ->
+                Timber.e(error.toString())
                 emit(false)
-                setErrorDialogState(ErrorDialogState.Unexpected(error.toString()))
             }
     }
 
@@ -104,7 +111,22 @@ class CredentialDetailViewModel @Inject constructor(
         navManager.navigateTo(PoliceQrCodeScreenDestination(imageData = qrCodeImageData))
     }
 
+    fun onShowActivities() {
+        _showBottomSheet.value = false
+        navManager.navigateTo(
+            direction = CredentialActivitiesScreenDestination(
+                navArgs = CredentialActivitiesNavArg(credentialId = navArgs.credentialId)
+            )
+        )
+    }
+
     fun onBottomSheetDismiss() {
         _showBottomSheet.value = false
+    }
+
+    fun onRefresh() {
+        viewModelScope.launch {
+            updateCredentialStatus(navArgs.credentialId)
+        }.trackCompletion(_isRefreshing)
     }
 }

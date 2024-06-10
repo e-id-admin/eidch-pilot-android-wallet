@@ -12,15 +12,15 @@ import ch.admin.foitt.openid4vc.util.assertErrorType
 import ch.admin.foitt.openid4vc.util.assertOk
 import com.nimbusds.jose.JWSAlgorithm
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class CreateDidJwkImplTest {
 
     private lateinit var createDidJwk: CreateDidJwk
 
-    @Before
+    @BeforeEach
     fun setUp() {
         createDidJwk = CreateDidJwkImpl()
     }

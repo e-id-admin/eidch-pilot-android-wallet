@@ -27,6 +27,7 @@ fun SettingsScreen(
 ) {
     SettingsScreenContent(
         onSecurityScreen = viewModel::onSecurityScreen,
+        onGetVerified = viewModel::onGetVerified,
         onFeedback = viewModel::onFeedback,
         onHelp = viewModel::onHelp,
         onContact = viewModel::onContact,
@@ -38,6 +39,7 @@ fun SettingsScreen(
 @Composable
 private fun SettingsScreenContent(
     onSecurityScreen: () -> Unit,
+    onGetVerified: () -> Unit,
     onFeedback: () -> Unit,
     onHelp: () -> Unit,
     onContact: () -> Unit,
@@ -55,7 +57,7 @@ private fun SettingsScreenContent(
                 bottom = Sizes.s04,
             )
     ) {
-        SettingsSection(onSecurityScreen)
+        SettingsSection(onSecurityScreen, onGetVerified)
         Spacer(modifier = Modifier.height(Sizes.s10))
 
         SupportSection(onFeedback, onHelp, onContact)
@@ -66,11 +68,20 @@ private fun SettingsScreenContent(
 }
 
 @Composable
-private fun SettingsSection(onSecurityScreen: () -> Unit) {
+private fun SettingsSection(
+    onSecurityScreen: () -> Unit,
+    onGetVerified: () -> Unit,
+) {
     WalletListItems.SimpleListItem(
         leadingIcon = R.drawable.pilot_ic_security,
         title = stringResource(id = R.string.settings_security),
         onItemClick = onSecurityScreen,
+        trailingIcon = R.drawable.pilot_ic_settings_next,
+    )
+    WalletListItems.SimpleListItem(
+        leadingIcon = R.drawable.pilot_ic_magnifier,
+        title = stringResource(id = R.string.settings_getVerified),
+        onItemClick = onGetVerified,
         trailingIcon = R.drawable.pilot_ic_settings_next,
         showDivider = false,
     )
@@ -126,6 +137,7 @@ fun SettingsScreenPreview() {
     PilotWalletTheme {
         SettingsScreenContent(
             onSecurityScreen = {},
+            onGetVerified = {},
             onFeedback = {},
             onHelp = {},
             onContact = {},

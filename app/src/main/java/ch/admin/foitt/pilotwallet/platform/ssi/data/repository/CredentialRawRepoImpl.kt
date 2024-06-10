@@ -2,7 +2,7 @@ package ch.admin.foitt.pilotwallet.platform.ssi.data.repository
 
 import ch.admin.foitt.pilotwallet.platform.database.data.dao.CredentialRawDao
 import ch.admin.foitt.pilotwallet.platform.database.domain.model.CredentialRaw
-import ch.admin.foitt.pilotwallet.platform.database.domain.model.DatabaseWrapper
+import ch.admin.foitt.pilotwallet.platform.database.domain.repository.DatabaseRepository
 import ch.admin.foitt.pilotwallet.platform.di.IoDispatcher
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.model.CredentialRawRepositoryError
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.model.SsiError
@@ -17,7 +17,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class CredentialRawRepoImpl @Inject constructor(
-    databaseWrapper: DatabaseWrapper,
+    databaseRepository: DatabaseRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : CredentialRawRepo {
     override suspend fun insert(credentialRaw: CredentialRaw) = runSuspendCatching {
@@ -49,5 +49,5 @@ class CredentialRawRepoImpl @Inject constructor(
     }
 
     private suspend fun dao(): CredentialRawDao = suspendUntilNonNull { daoFlow.value }
-    private val daoFlow = databaseWrapper.credentialRawDao
+    private val daoFlow = databaseRepository.credentialRawDao
 }

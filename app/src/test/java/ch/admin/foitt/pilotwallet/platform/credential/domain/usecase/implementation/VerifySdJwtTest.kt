@@ -15,9 +15,9 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 // Documentation
 // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-05.html#name-verification-of-the-sd-jwt
@@ -28,7 +28,7 @@ class VerifySdJwtTest {
     private lateinit var parseRawSdJwt: ParseRawSdJwt
     private lateinit var parseSdJwt: ParseSdJwt
 
-    @Before
+    @BeforeEach
     fun setUp() {
         parseRawSdJwt = ParseRawSdJwtImpl(testDispatcher)
         parseSdJwt = ParseSdJwtImpl(
@@ -90,7 +90,8 @@ class VerifySdJwtTest {
           }
         }
          */
-        private const val JWT_WITH_TWO_DIGESTS = "eyJraWQiOiJzdXBwb3J0ZWRDcnlwdG9ncmFwaGljQmluZGluZ01ldGhvZDpleUpyZEhraU9pSkZReUlzSW1OeWRpSTZJbEF0TlRJeElpd2llQ0k2SWtGSk5rSnVWbmszUXpaNlZVUXdiMGxJWlVkU1puTlJiM1V4Y1c1VWNqRmxjbU5hTjNwSk1HVTNWRWhpVEhSalQyNWpUV1JOV2tJM2J6TjJTblZpVjNSSmNFbHhZV3hmZDJ0NFdtbDVSbGxtTVhkNGJGQkNhbG9pTENKNUlqb2lRVXRmWTNwc2FXMU1TbWc1YW1wQ1VHa3lVbFV5TjFoalNVSmhPRkZMWmsweVRVdzVSbmM0WVRKdFlqa3lPWGROYkZsallscDFTVTl6UTFSdE1VZEVWVkZRV2xsTlRWaEtSWFZzU2tjemFuVlpha0Y1V0hsVVFTSjkiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzUxMiJ9.eyJ2YyI6eyJjcmVkZW50aWFsU3ViamVjdCI6eyJfc2QiOlsieGdUa2l5SmRGc3JYV1VfNHZUbVNZNW1GNTNkSkNjODZXTUh4SzRTTkF3SSIsIl92VE1iSXptSFVHY2ZzOGNpTUtPR2FPc3FlYmtCTkVjaTROYW5wdkJUalEiXX19LCJpYXQiOjE3MDU1ODA1OTh9.AAbfTl_hdkeHYoa7-tgJo488aQXVZcYRf9FcFSuL3IuhX-1PNcdahNNEBEuZcS-tekt74lwm5E4DRACfJSbd16YWAAhL9PBWHVStAVHlP3baiDYrLjjq6dOqdq1mnhBFNXhNXMblbOCIVDTWChb6LKe7Ztso7O493SnOaftpApqw8dZ9"
+        private const val JWT_WITH_TWO_DIGESTS =
+            "eyJraWQiOiJzdXBwb3J0ZWRDcnlwdG9ncmFwaGljQmluZGluZ01ldGhvZDpleUpyZEhraU9pSkZReUlzSW1OeWRpSTZJbEF0TlRJeElpd2llQ0k2SWtGSk5rSnVWbmszUXpaNlZVUXdiMGxJWlVkU1puTlJiM1V4Y1c1VWNqRmxjbU5hTjNwSk1HVTNWRWhpVEhSalQyNWpUV1JOV2tJM2J6TjJTblZpVjNSSmNFbHhZV3hmZDJ0NFdtbDVSbGxtTVhkNGJGQkNhbG9pTENKNUlqb2lRVXRmWTNwc2FXMU1TbWc1YW1wQ1VHa3lVbFV5TjFoalNVSmhPRkZMWmsweVRVdzVSbmM0WVRKdFlqa3lPWGROYkZsallscDFTVTl6UTFSdE1VZEVWVkZRV2xsTlRWaEtSWFZzU2tjemFuVlpha0Y1V0hsVVFTSjkiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzUxMiJ9.eyJ2YyI6eyJjcmVkZW50aWFsU3ViamVjdCI6eyJfc2QiOlsieGdUa2l5SmRGc3JYV1VfNHZUbVNZNW1GNTNkSkNjODZXTUh4SzRTTkF3SSIsIl92VE1iSXptSFVHY2ZzOGNpTUtPR2FPc3FlYmtCTkVjaTROYW5wdkJUalEiXX19LCJpYXQiOjE3MDU1ODA1OTh9.AAbfTl_hdkeHYoa7-tgJo488aQXVZcYRf9FcFSuL3IuhX-1PNcdahNNEBEuZcS-tekt74lwm5E4DRACfJSbd16YWAAhL9PBWHVStAVHlP3baiDYrLjjq6dOqdq1mnhBFNXhNXMblbOCIVDTWChb6LKe7Ztso7O493SnOaftpApqw8dZ9"
 
         private const val FIRST_DISCLOSURE = "WyJzYWx0IiwgImtleSIsICJ2YWx1ZSJd"
         private const val SECOND_DISCLOSURE = "WyJzYWx0MiIsICJrZXkyIiwgInZhbHVlMiJd"

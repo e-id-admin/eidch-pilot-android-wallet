@@ -31,13 +31,14 @@ import coil.compose.AsyncImage
 
 @Composable
 fun CredentialClaimsScreenContent(
+    modifier: Modifier = Modifier,
     topContent: @Composable LazyItemScope.() -> Unit = {},
     bottomContent: @Composable LazyItemScope.() -> Unit = {},
     title: String,
     claims: List<CredentialClaimData>,
     credentialCardState: CredentialCardState,
 ) = LazyColumn(
-    modifier = Modifier
+    modifier = modifier
         .fillMaxWidth()
 ) {
     item {

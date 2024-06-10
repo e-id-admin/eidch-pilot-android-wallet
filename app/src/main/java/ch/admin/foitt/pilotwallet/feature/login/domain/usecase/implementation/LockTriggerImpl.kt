@@ -4,24 +4,16 @@ import androidx.annotation.CheckResult
 import ch.admin.foitt.pilotwallet.feature.login.domain.usecase.IsDevicePinSet
 import ch.admin.foitt.pilotwallet.feature.login.domain.usecase.LockTrigger
 import ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.domain.model.AppLifecycleState
-import ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.domain.repository.AppLifecycleRepository
+import ch.admin.foitt.pilotwallet.platform.appLifecycleRepository.domain.usecase.GetAppLifecycleState
 import ch.admin.foitt.pilotwallet.platform.database.domain.usecase.CloseAppDatabase
 import ch.admin.foitt.pilotwallet.platform.database.domain.usecase.IsAppDatabaseOpen
 import ch.admin.foitt.pilotwallet.platform.di.IoDispatcherScope
 import ch.admin.foitt.pilotwallet.platform.navigation.NavigationManager
 import ch.admin.foitt.pilotwallet.platform.navigation.domain.model.NavigationAction
-import ch.admin.foitt.pilotwalletcomposedestinations.destinations.BiometricLoginScreenDestination
-import ch.admin.foitt.pilotwalletcomposedestinations.destinations.ConfirmPinScreenDestination
+import ch.admin.foitt.pilotwallet.platform.navigation.utils.blackListedDestinationsLockScreen
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.Destination
-import ch.admin.foitt.pilotwalletcomposedestinations.destinations.EnterPinScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.LockScreenDestination
 import ch.admin.foitt.pilotwalletcomposedestinations.destinations.NoDevicePinSetScreenDestination
-import ch.admin.foitt.pilotwalletcomposedestinations.destinations.OnboardingIntroScreenDestination
-import ch.admin.foitt.pilotwalletcomposedestinations.destinations.OnboardingQRScreenDestination
-import ch.admin.foitt.pilotwalletcomposedestinations.destinations.PinLoginScreenDestination
-import ch.admin.foitt.pilotwalletcomposedestinations.destinations.RegisterBiometricsScreenDestination
-import ch.admin.foitt.pilotwalletcomposedestinations.destinations.StartScreenDestination
-import ch.admin.foitt.pilotwalletcomposedestinations.destinations.UserPrivacyPolicyScreenDestination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -32,14 +24,14 @@ import javax.inject.Inject
 internal class LockTriggerImpl @Inject constructor(
     private val navManager: NavigationManager,
     private val closeAppDatabase: CloseAppDatabase,
-    private val appLifecycleRepo: AppLifecycleRepository,
+    private val getAppLifecycleState: GetAppLifecycleState,
     private val isAppDatabaseOpen: IsAppDatabaseOpen,
     private val isDevicePinSet: IsDevicePinSet,
     @IoDispatcherScope private val ioDispatcherScope: CoroutineScope,
 ) : LockTrigger {
     @CheckResult
     override suspend fun invoke(): StateFlow<NavigationAction> = combine(
-        appLifecycleRepo.state,
+        getAppLifecycleState(),
         navManager.currentDestinationFlow,
     ) { appLifecycleState, currentDestination ->
         currentDestination ?: return@combine NavigationAction { }
@@ -49,7 +41,7 @@ internal class LockTriggerImpl @Inject constructor(
                 closeAppDatabase()
                 navigateToNoDevicePinSet()
             }
-            isScreenWhiteListed(currentDestination) -> {
+            isScreenBlackListed(currentDestination) -> {
                 closeAppDatabase()
                 NavigationAction {}
             }
@@ -77,23 +69,7 @@ internal class LockTriggerImpl @Inject constructor(
         }
     }
 
-    private fun isScreenWhiteListed(destination: Destination): Boolean {
-        return whiteListedDestinations.contains(destination)
+    private fun isScreenBlackListed(destination: Destination): Boolean {
+        return blackListedDestinationsLockScreen.contains(destination)
     }
-
-    // Destinations that should not trigger a lock screen
-    // it implicitly means that the database should either not exist, or be closed and encrypted, on these destinations
-    private val whiteListedDestinations = listOf(
-        StartScreenDestination,
-        NoDevicePinSetScreenDestination,
-        LockScreenDestination,
-        OnboardingIntroScreenDestination,
-        OnboardingQRScreenDestination,
-        PinLoginScreenDestination,
-        BiometricLoginScreenDestination,
-        UserPrivacyPolicyScreenDestination,
-        EnterPinScreenDestination,
-        ConfirmPinScreenDestination,
-        RegisterBiometricsScreenDestination,
-    )
 }

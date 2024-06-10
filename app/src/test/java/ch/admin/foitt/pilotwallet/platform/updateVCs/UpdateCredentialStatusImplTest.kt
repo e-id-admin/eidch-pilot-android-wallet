@@ -19,10 +19,10 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class UpdateCredentialStatusImplTest {
 
@@ -36,7 +36,7 @@ class UpdateCredentialStatusImplTest {
 
     private lateinit var updateCredentialStatus: UpdateCredentialStatus
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -58,10 +58,7 @@ class UpdateCredentialStatusImplTest {
             mockGetAndRefreshCredentialValidity(any())
         }
 
-        assertEquals(
-            result,
-            CredentialStatus.VALID
-        )
+        assertEquals(result, CredentialStatus.VALID)
     }
 
     @Test
@@ -88,7 +85,7 @@ class UpdateCredentialStatusImplTest {
         }
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

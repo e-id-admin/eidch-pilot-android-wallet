@@ -2,7 +2,7 @@ package ch.admin.foitt.pilotwallet.platform.ssi.data.repository
 
 import ch.admin.foitt.pilotwallet.platform.database.data.dao.CredentialClaimDisplayDao
 import ch.admin.foitt.pilotwallet.platform.database.domain.model.CredentialClaimDisplay
-import ch.admin.foitt.pilotwallet.platform.database.domain.model.DatabaseWrapper
+import ch.admin.foitt.pilotwallet.platform.database.domain.repository.DatabaseRepository
 import ch.admin.foitt.pilotwallet.platform.di.IoDispatcher
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.model.CredentialClaimDisplayRepositoryError
 import ch.admin.foitt.pilotwallet.platform.ssi.domain.model.SsiError
@@ -17,7 +17,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class CredentialClaimDisplayRepoImpl @Inject constructor(
-    databaseWrapper: DatabaseWrapper,
+    databaseRepository: DatabaseRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : CredentialClaimDisplayRepo {
     override suspend fun insertAll(
@@ -44,5 +44,5 @@ class CredentialClaimDisplayRepoImpl @Inject constructor(
         }
 
     private suspend fun dao(): CredentialClaimDisplayDao = suspendUntilNonNull { daoFlow.value }
-    private val daoFlow = databaseWrapper.credentialClaimDisplayDao
+    private val daoFlow = databaseRepository.credentialClaimDisplayDao
 }

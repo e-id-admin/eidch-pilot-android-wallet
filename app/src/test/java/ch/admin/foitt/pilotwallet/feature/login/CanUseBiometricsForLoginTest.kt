@@ -16,10 +16,10 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import javax.crypto.Cipher
 
 class CanUseBiometricsForLoginTest {
@@ -39,7 +39,7 @@ class CanUseBiometricsForLoginTest {
 
     private lateinit var testedUseCase: CanUseBiometricsForLogin
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -107,7 +107,7 @@ class CanUseBiometricsForLoginTest {
         assertTrue(result is CanUseBiometricsForLoginResult.Changed)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }

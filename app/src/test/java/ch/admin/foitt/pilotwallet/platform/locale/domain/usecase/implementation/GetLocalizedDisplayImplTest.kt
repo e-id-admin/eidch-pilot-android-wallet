@@ -7,11 +7,11 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.util.Locale
 
 class GetLocalizedDisplayImplTest {
@@ -20,13 +20,13 @@ class GetLocalizedDisplayImplTest {
     private lateinit var mockGetCurrentAppLocale: GetCurrentAppLocale
     private lateinit var getLocalizedDisplay: GetLocalizedDisplay
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
         getLocalizedDisplay = GetLocalizedDisplayImpl(getCurrentAppLocale = mockGetCurrentAppLocale)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -67,11 +67,11 @@ class GetLocalizedDisplayImplTest {
 
         assertEquals(
             getLocalizedDisplay(LocalizedDisplayTestData.withSupportedLocaleWithCountryCode.toList())?.locale,
-            getLocalizedDisplay(LocalizedDisplayTestData.withSupportedLocaleWithCountryCode.toSet())?.locale,
+            getLocalizedDisplay(LocalizedDisplayTestData.withSupportedLocaleWithCountryCode.toSet())?.locale
         )
         assertEquals(
             getLocalizedDisplay(LocalizedDisplayTestData.withSupportedLocaleNoCountryCode.toList())?.locale,
-            getLocalizedDisplay(LocalizedDisplayTestData.withSupportedLocaleNoCountryCode.toSet())?.locale,
+            getLocalizedDisplay(LocalizedDisplayTestData.withSupportedLocaleNoCountryCode.toSet())?.locale
         )
         assertEquals(
             getLocalizedDisplay(LocalizedDisplayTestData.noSupportedLocaleAndNoFallback.toList())?.locale,
@@ -87,12 +87,7 @@ class GetLocalizedDisplayImplTest {
     fun `should return null for empty input collection`() = runTest {
         coEvery { mockGetCurrentAppLocale() } returns Locale("de", "CH")
 
-        assertNull(
-            getLocalizedDisplay(emptyList()),
-        )
-
-        assertNull(
-            getLocalizedDisplay(emptySet()),
-        )
+        assertNull(getLocalizedDisplay(emptyList()))
+        assertNull(getLocalizedDisplay(emptySet()))
     }
 }

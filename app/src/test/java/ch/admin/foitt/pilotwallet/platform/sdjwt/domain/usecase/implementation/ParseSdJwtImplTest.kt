@@ -15,9 +15,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class ParseSdJwtImplTest {
 
@@ -27,7 +27,7 @@ class ParseSdJwtImplTest {
 
     private lateinit var parseSdJwtUseCase: ParseSdJwtImpl
 
-    @Before
+    @BeforeEach
     fun setUp() {
         parseSdJwtUseCase = ParseSdJwtImpl(testDispatcher, parseRawSdJwt)
     }

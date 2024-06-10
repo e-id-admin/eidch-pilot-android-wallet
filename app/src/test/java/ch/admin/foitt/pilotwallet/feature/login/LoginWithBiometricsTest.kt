@@ -15,6 +15,7 @@ import ch.admin.foitt.pilotwallet.platform.login.domain.usecase.LoginWithBiometr
 import ch.admin.foitt.pilotwallet.platform.login.domain.usecase.implementation.LoginWithBiometricsImpl
 import ch.admin.foitt.pilotwallet.platform.passphrase.domain.model.LoadAndDecryptPassphraseError
 import ch.admin.foitt.pilotwallet.platform.passphrase.domain.usecase.LoadAndDecryptPassphrase
+import ch.admin.foitt.pilotwallet.platform.userInteraction.domain.usecase.UserInteraction
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
@@ -22,16 +23,20 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import io.mockk.MockKAnnotations
 import io.mockk.Ordering
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import javax.crypto.Cipher
 
 class LoginWithBiometricsTest {
@@ -51,6 +56,9 @@ class LoginWithBiometricsTest {
     private lateinit var mockOpenAppDatabase: OpenAppDatabase
 
     @MockK
+    private lateinit var mockUserInteraction: UserInteraction
+
+    @MockK
     private lateinit var mockResetBiometrics: ResetBiometrics
 
     @MockK
@@ -58,7 +66,7 @@ class LoginWithBiometricsTest {
 
     private lateinit var testedUseCase: LoginWithBiometrics
 
-    @Before
+    @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
 
@@ -67,6 +75,7 @@ class LoginWithBiometricsTest {
             launchBiometricPrompt = mockLaunchBiometricPrompt,
             getBiometricsCipher = mockGetBiometricsCipher,
             openAppDatabase = mockOpenAppDatabase,
+            userInteraction = mockUserInteraction,
             resetBiometrics = mockResetBiometrics,
         )
 
@@ -75,10 +84,11 @@ class LoginWithBiometricsTest {
         coEvery { mockOpenAppDatabase(any()) } returns Ok(Unit)
         coEvery { mockLoadAndDecryptPassphrase(any()) } returns Ok(byteArrayOf(1, 2))
         coEvery { mockLaunchBiometricPrompt(any(), any()) } returns Ok(mockCipher)
+        coEvery { mockUserInteraction() } just Runs
         coEvery { mockResetBiometrics() } returns Ok(Unit)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -87,7 +97,7 @@ class LoginWithBiometricsTest {
     @Test
     fun `A successful login follow specific steps and return a success`() = runTest {
         val result: Result<Unit, LoginWithBiometricsError> = testedUseCase(mockWrapper)
-        Assert.assertNotNull(result.get())
+        assertNotNull(result.get())
 
         coVerify(ordering = Ordering.ORDERED) {
             mockGetBiometricsCipher.invoke()
@@ -104,10 +114,10 @@ class LoginWithBiometricsTest {
 
         val result: Result<Unit, LoginWithBiometricsError> = testedUseCase(mockWrapper)
 
-        Assert.assertTrue(result.getError() is LoginError.Unexpected)
+        assertTrue(result.getError() is LoginError.Unexpected)
 
         val error = result.getError() as LoginError.Unexpected
-        Assert.assertEquals(loadError.throwable, error.cause)
+        assertEquals(loadError.throwable, error.cause)
     }
 
     @Test
@@ -117,7 +127,7 @@ class LoginWithBiometricsTest {
 
         val result: Result<Unit, LoginWithBiometricsError> = testedUseCase(mockWrapper)
 
-        Assert.assertTrue(result.getError() is LoginError.InvalidPassphrase)
+        assertTrue(result.getError() is LoginError.InvalidPassphrase)
     }
 
     @Test
@@ -127,10 +137,10 @@ class LoginWithBiometricsTest {
 
         val result: Result<Unit, LoginWithBiometricsError> = testedUseCase(mockWrapper)
 
-        Assert.assertTrue(result.getError() is LoginError.Unexpected)
+        assertTrue(result.getError() is LoginError.Unexpected)
 
         val error = result.getError() as LoginError.Unexpected
-        Assert.assertEquals(cipherError.cause, error.cause)
+        assertEquals(cipherError.cause, error.cause)
     }
 
     @Test
@@ -141,7 +151,7 @@ class LoginWithBiometricsTest {
 
         val result: Result<Unit, LoginWithBiometricsError> = testedUseCase(mockWrapper)
 
-        Assert.assertTrue(result.getError() is LoginError.Cancelled)
+        assertTrue(result.getError() is LoginError.Cancelled)
     }
 
     @SuppressLint("CheckResult")
@@ -160,6 +170,6 @@ class LoginWithBiometricsTest {
             mockGetBiometricsCipher()
             mockResetBiometrics()
         }
-        Assert.assertTrue(result.getError() is LoginError.BiometricsChanged)
+        assertTrue(result.getError() is LoginError.BiometricsChanged)
     }
 }

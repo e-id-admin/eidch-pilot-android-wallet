@@ -27,10 +27,11 @@ import io.mockk.just
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import javax.crypto.Cipher
 
 internal class InitializePassphraseTest {
@@ -63,7 +64,7 @@ internal class InitializePassphraseTest {
 
     private lateinit var passPhraseInitUseCase: InitializePassphraseImpl
 
-    @Before
+    @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
 
@@ -85,7 +86,7 @@ internal class InitializePassphraseTest {
         coEvery { mockPepperIvRepository.save(any()) } just Runs
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -94,7 +95,7 @@ internal class InitializePassphraseTest {
     @Test
     fun `A successful init without cipher should follow specific steps`() = runTest(testDispatcher) {
         val result = passPhraseInitUseCase(pin = "0", null)
-        Assert.assertNotNull(result.get())
+        assertNotNull(result.get())
 
         coVerify(exactly = 0) {
             mockEncryptAndSavePassphrase.invoke(any(), any())
@@ -113,7 +114,7 @@ internal class InitializePassphraseTest {
     @Test
     fun `A successful init with cipher should follow specific steps`() = runTest(testDispatcher) {
         val result = passPhraseInitUseCase(pin = "0", mockCipher)
-        Assert.assertNotNull(result.get())
+        assertNotNull(result.get())
 
         coVerifyOrder {
             mockHashPassphrase.invoke(any(), any())
@@ -143,7 +144,7 @@ internal class InitializePassphraseTest {
         coEvery { mockHashPassphrase.invoke(any(), any()) } returns Err(error)
 
         val result = passPhraseInitUseCase(pin = "0", null)
-        Assert.assertTrue(result.getError() is InitializePassphraseError.Unexpected)
+        assertTrue(result.getError() is InitializePassphraseError.Unexpected)
 
         coVerify(exactly = 0) {
             mockPepperPassphrase.invoke(any(), any())
@@ -162,7 +163,7 @@ internal class InitializePassphraseTest {
 
         val result = passPhraseInitUseCase(pin = "pin", mockCipher)
 
-        Assert.assertTrue(result.getError() is InitializePassphraseError.Unexpected)
+        assertTrue(result.getError() is InitializePassphraseError.Unexpected)
         coVerify {
             mockEncryptAndSavePassphrase(any(), any())
         }

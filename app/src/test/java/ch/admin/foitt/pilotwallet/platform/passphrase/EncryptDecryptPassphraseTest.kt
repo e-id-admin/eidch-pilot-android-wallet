@@ -25,10 +25,11 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
@@ -57,7 +58,7 @@ class EncryptDecryptPassphraseTest {
 
     private fun createSecretKey(): SecretKey = SecretKeySpec(keyBytes, algorithmName)
 
-    @Before
+    @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
 
@@ -79,7 +80,7 @@ class EncryptDecryptPassphraseTest {
         )
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         unmockkAll()
     }
@@ -102,11 +103,11 @@ class EncryptDecryptPassphraseTest {
                 encryptionCipher = currentEncryptionCipher
             )
 
-            Assert.assertNotNull(
-                "passphrase encryption failed:\n" +
-                    "passphrase $passphrase,\n" +
-                    encryptionResult.getOrElse { it.throwable.localizedMessage },
-                encryptionResult.get()
+            assertNotNull(
+                encryptionResult.get(),
+                "passphrase encryption failed:\n" + "passphrase $passphrase,\n" + encryptionResult.getOrElse {
+                    it.throwable.localizedMessage
+                }
             )
 
             val decryptionResult = decryptionUseCase(
@@ -114,7 +115,7 @@ class EncryptDecryptPassphraseTest {
             )
             decryptionResult.assertOk()
 
-            Assert.assertEquals(passphrase, String(decryptionResult.getOrThrow { it.throwable }))
+            assertEquals(passphrase, String(decryptionResult.getOrThrow { it.throwable }))
         }
     }
 
@@ -127,9 +128,9 @@ class EncryptDecryptPassphraseTest {
             encryptionCipher = mockCipher
         )
 
-        Assert.assertNotNull(encryptionResult.getError())
+        assertNotNull(encryptionResult.getError())
         val error = encryptionResult.unwrapError()
-        Assert.assertEquals(exception, error.throwable)
+        assertEquals(exception, error.throwable)
     }
 
     @Test
@@ -143,7 +144,7 @@ class EncryptDecryptPassphraseTest {
 
         decryptionResult.assertErr()
         val error = decryptionResult.unwrapError()
-        Assert.assertEquals(exception, error.throwable)
+        assertEquals(exception, error.throwable)
     }
 
     private fun initializeCiphers() {
@@ -156,14 +157,12 @@ class EncryptDecryptPassphraseTest {
         )
 
         currentEncryptionCipher = getCipherForEncryptionImpl(
-            keystoreKeyConfig = mockPassConfig,
-            initializationVector = null
+            keystoreKeyConfig = mockPassConfig, initializationVector = null
         ).getOrThrow { Exception("Get cipher for encryption error") }
         testPassphraseRepository.currentIv = currentEncryptionCipher.iv
         currentDecryptionCipher = runBlocking {
             getCipherForDecryptionImpl(
-                keystoreKeyConfig = mockPassConfig,
-                initializationVector = testPassphraseRepository.currentIv
+                keystoreKeyConfig = mockPassConfig, initializationVector = testPassphraseRepository.currentIv
             ).getOrThrow { Exception("Get cipher for decryption error") }
         }
     }
@@ -172,11 +171,10 @@ class EncryptDecryptPassphraseTest {
         var currentPassphraseCipherText: ByteArray = byteArrayOf()
         var currentIv: ByteArray = byteArrayOf()
 
-        override suspend fun getPassphrase() =
-            CiphertextWrapper(
-                ciphertext = currentPassphraseCipherText,
-                initializationVector = currentIv,
-            )
+        override suspend fun getPassphrase() = CiphertextWrapper(
+            ciphertext = currentPassphraseCipherText,
+            initializationVector = currentIv,
+        )
 
         override suspend fun savePassphrase(passphraseWrapper: CiphertextWrapper) {
             currentPassphraseCipherText = passphraseWrapper.ciphertext
